@@ -18,9 +18,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       // FREE
       { name: "Wait! Before you go...", description: "Grab attention with a stunning exit intent popup.", type: "POPUP", category: "Exit Intent", plan: "FREE", previewImage: "/3d_envelope.png", config: JSON.stringify({ layout: "split", hasEmailInput: true, imageUrl: "/3d_envelope.png", colors: { background: "linear-gradient(135deg, #1A1A24 0%, #0F0F13 100%)", text: "#FFFFFF", primary: "#9D4EDD" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 25px 50px -12px rgba(157, 78, 221, 0.25)", border: "1px solid rgba(157, 78, 221, 0.3)" }, content: { headline: "Wait! Before you go...", description: "Join our newsletter and get 15% off your first order instantly.", buttonText: "Get 15% Off" } }) },
       
-      { name: "Get 10% Off", description: "A beautiful gift box offer to welcome new visitors.", type: "POPUP", category: "Discount", plan: "FREE", previewImage: "/3d_gift_box.png", config: JSON.stringify({ layout: "split", hasEmailInput: true, imageUrl: "/3d_gift_box.png", colors: { background: "linear-gradient(135deg, #FFEDD5 0%, #FFFAEB 100%)", text: "#431407", primary: "#F97316" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 20px 40px -10px rgba(249, 115, 22, 0.2)", border: "1px solid rgba(249, 115, 22, 0.1)" }, content: { headline: "Get 10% Off", description: "Unwrap your exclusive welcome discount. Enter your email below.", buttonText: "Claim My Gift" } }) },
+      { name: "Get 10% Off", description: "A beautiful gift box offer to welcome new visitors.", type: "POPUP", category: "Discount", plan: "FREE", previewImage: "/3d_gift_box.png", config: JSON.stringify({ layout: "split", hasEmailInput: true, imageUrl: "/3d_gift_box.png", colors: { background: "#FFEDD5", text: "#431407", primary: "#F97316" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 20px 40px -10px rgba(249, 115, 22, 0.2)", border: "1px solid rgba(249, 115, 22, 0.1)" }, content: { headline: "Get 10% Off", description: "Unwrap your exclusive welcome discount. Enter your email below.", buttonText: "Claim My Gift" } }) },
       
-      { name: "Basic Newsletter", description: "A clean, modern newsletter capture.", type: "POPUP", category: "Newsletter", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1577563908411-50cb98976efe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "#ffffff", text: "#111827", primary: "#111827" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }, content: { headline: "Stay in the loop", description: "Get the latest updates, exclusive offers, and more directly to your inbox.", buttonText: "Subscribe Now" } }) },
+      { name: "Subscribe Popup", description: "A clean, modern newsletter capture.", type: "POPUP", category: "Newsletter", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1577563908411-50cb98976efe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "#ffffff", text: "#111827", primary: "#111827" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }, content: { headline: "Stay in the loop", description: "Get the latest updates, exclusive offers, and more directly to your inbox.", buttonText: "Subscribe Now" } }) },
       
       { name: "Website Redirect", description: "Clean, minimalist redirect popup.", type: "POPUP", category: "Announcement", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, colors: { background: "#ffffff", text: "#000000", primary: "#000000" }, styles: { borderRadius: "12px", padding: "32px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", border: "none" }, content: { headline: "Special Offer", description: "Click the button below to claim your offer on the next page.", buttonText: "Claim Offer", buttonUrl: "" } }) },
       
@@ -221,12 +221,50 @@ export default function Templates() {
         <div className="template-grid">
           {filteredTemplates.map((tpl) => (
             <div key={tpl.id} className="template-card">
-              <div style={{ position: "relative" }}>
-                <img 
-                  src={tpl.previewImage} 
-                  alt={tpl.name} 
-                  style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '8px' }} 
-                />
+              <div style={{ position: "relative", width: "100%", height: "220px", overflow: "hidden", backgroundColor: "#2A2A35", borderRadius: "8px" }}>
+                {(() => {
+                  const pConfig = JSON.parse(tpl.config);
+                  return (
+                    <div style={{
+                      ...pConfig.colors,
+                      background: pConfig.colors.background,
+                      color: pConfig.colors.text,
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: pConfig.layout === "split" ? "row" : "column",
+                      overflow: "hidden",
+                      pointerEvents: "none",
+                      boxSizing: "border-box"
+                    }}>
+                      {pConfig.layout === "split" && pConfig.imageUrl && (
+                        <div style={{ flex: 1 }}>
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        </div>
+                      )}
+                      <div style={{ flex: pConfig.layout === "split" ? 1 : undefined, width: "100%", height: "100%", padding: "20px", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
+                        {pConfig.layout !== "split" && pConfig.imageUrl && (
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "80px", objectFit: "contain", marginBottom: "12px" }} />
+                        )}
+                        <div style={{ margin: "0 0 10px 0", fontSize: "18px", fontWeight: "bold", color: pConfig.colors.text, lineHeight: "1.2" }}>{pConfig.content.headline}</div>
+                        <p style={{ color: pConfig.colors.text, margin: "0 0 12px 0", fontSize: "13px", lineHeight: "1.4", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{pConfig.content.description}</p>
+                        
+                        {pConfig.hasEmailInput && (
+                          <div style={{ padding: "8px", marginBottom: "10px", width: "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontSize: "12px", color: "#888", textAlign: "left", backgroundColor: "#fff" }}>
+                            Enter your email
+                          </div>
+                        )}
+                        
+                        <div style={{
+                          padding: "8px 16px", width: "100%", border: "none", borderRadius: "4px",
+                          backgroundColor: pConfig.colors.primary, color: "#fff", fontWeight: "bold", fontSize: "13px", boxSizing: "border-box"
+                        }}>
+                          {pConfig.content.buttonText}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
               
               <div className="template-card-header">
@@ -330,7 +368,7 @@ export default function Templates() {
                     {JSON.parse(previewTemplate.config).layout !== "split" && JSON.parse(previewTemplate.config).imageUrl && (
                       <img src={JSON.parse(previewTemplate.config).imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
                     )}
-                    <h2 style={{ marginTop: 0, color: JSON.parse(previewTemplate.config).colors.text }}>{JSON.parse(previewTemplate.config).content.headline}</h2>
+                    <div style={{ margin: "0 0 16px 0", fontSize: "24px", fontWeight: "bold", color: JSON.parse(previewTemplate.config).colors.text }}>{JSON.parse(previewTemplate.config).content.headline}</div>
                     <p style={{ color: JSON.parse(previewTemplate.config).colors.text, marginBottom: "16px" }}>{JSON.parse(previewTemplate.config).content.description}</p>
                     
                     {JSON.parse(previewTemplate.config).hasEmailInput && (
