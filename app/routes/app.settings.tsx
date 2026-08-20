@@ -43,27 +43,16 @@ export default function SettingsPage() {
                   You must activate it before your popups will appear.
                 </Text>
                 <InlineStack align="start">
-                  <Button variant="primary" url={themeEditorUrl} target="_blank">
-                    Activate App Embed in Theme
-                  </Button>
+                  <a href={themeEditorUrl} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="gradient-button">
+                      Activate App Embed in Theme
+                    </button>
+                  </a>
                 </InlineStack>
               </BlockStack>
             </Card>
 
-            {/* Store Information */}
-            <Card>
-              <BlockStack gap="400">
-                <Text as="h2" variant="headingMd">Store Information</Text>
-                <InlineStack align="space-between">
-                  <Text as="p" tone="subdued">Connected Store</Text>
-                  <Text as="p" fontWeight="bold">{shop}</Text>
-                </InlineStack>
-                <InlineStack align="space-between">
-                  <Text as="p" tone="subdued">Timezone</Text>
-                  <Text as="p">UTC</Text>
-                </InlineStack>
-              </BlockStack>
-            </Card>
+
 
             {/* Billing Information */}
             <Card>
@@ -76,7 +65,9 @@ export default function SettingsPage() {
                   </Badge>
                 </InlineStack>
                 <InlineStack align="start">
-                  <Button onClick={() => navigate("/app/pricing")}>Manage Subscription</Button>
+                  <button className="gradient-button" onClick={() => navigate("/app/pricing")}>
+                    Manage Subscription
+                  </button>
                 </InlineStack>
               </BlockStack>
             </Card>

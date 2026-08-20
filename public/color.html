@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Color Picker</title></head>
+<body>
+<canvas id="c"></canvas>
+<script>
+  const img = new Image();
+  img.src = '/3d_truck.jpg';
+  img.onload = () => {
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const p = ctx.getImageData(10, 10, 1, 1).data;
+    const hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+    console.log(hex);
+    document.body.innerHTML = '<h1>Color: ' + hex + '</h1>';
+  };
+  function rgbToHex(r, g, b) {
+    return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+</script>
+</body>
+</html>

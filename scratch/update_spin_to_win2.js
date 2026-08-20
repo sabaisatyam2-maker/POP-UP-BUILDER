@@ -1,0 +1,51 @@
+import { PrismaClient } from '@prisma/client';
+const db = new PrismaClient();
+
+async function main() {
+  const configStr = JSON.stringify({
+    layout: "background",
+    hasEmailInput: false,
+    imageUrl: "/new_year_fireworks.png",
+    colors: {
+      background: "#050505",
+      text: "#ffffff",
+      primary: "#E0C070",
+      buttonText: "#000000",
+      headlineText: "#E0C070"
+    },
+    styles: {
+      borderRadius: "16px",
+      padding: "32px",
+      border: "1px solid #E0C070",
+      boxShadow: "0 10px 30px rgba(224, 192, 112, 0.15)"
+    },
+    content: {
+      subheadline: "New Year Sale",
+      headline: "Flat 30% OFF",
+      description: "On All Orders",
+      buttonText: "Shop Now"
+    }
+  });
+
+  const res = await db.template.updateMany({
+    where: {
+      name: 'New Year Sale'
+    },
+    data: {
+      config: configStr
+    }
+  });
+  console.log(`Updated ${res.count} templates.`);
+  
+  const res2 = await db.popup.updateMany({
+    where: {
+      name: 'New Year Sale'
+    },
+    data: {
+      config: configStr
+    }
+  });
+  console.log(`Updated ${res2.count} popups.`);
+}
+
+main().catch(console.error).finally(() => db.$disconnect());

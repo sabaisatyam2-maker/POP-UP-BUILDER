@@ -11,7 +11,7 @@ export const planLimits = {
   },
   GROWTH: {
     templates: 5,
-    activePopups: 3,
+    activePopups: 5,
     mobileCustomization: true,
     advancedAnimations: false,
     pageTargeting: true,
@@ -21,7 +21,7 @@ export const planLimits = {
   },
   PRO: {
     templates: 10,
-    activePopups: 10,
+    activePopups: 9999,
     mobileCustomization: true,
     advancedAnimations: true,
     pageTargeting: true,

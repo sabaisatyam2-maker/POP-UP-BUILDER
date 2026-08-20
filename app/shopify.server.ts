@@ -27,7 +27,7 @@ const shopify = shopifyApp({
     "GROWTH": {
       lineItems: [
         {
-          amount: 4.99,
+          amount: 18.00,
           currencyCode: "USD",
           interval: BillingInterval.Every30Days,
         }
@@ -36,7 +36,7 @@ const shopify = shopifyApp({
     "PRO": {
       lineItems: [
         {
-          amount: 9.99,
+          amount: 23.00,
           currencyCode: "USD",
           interval: BillingInterval.Every30Days,
         }

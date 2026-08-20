@@ -4,6 +4,18 @@ import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { useState, useMemo } from "react";
 
+export function getContrastColor(hex: string) {
+  if (!hex) return '#000000';
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  if (hex.length !== 6) return '#000000';
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  return (yiq >= 128) ? '#000000' : '#FFFFFF';
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   let templates = await db.template.findMany({
@@ -15,28 +27,27 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     await db.template.deleteMany();
     
     const seedTemplates = [
-      // FREE
-      { name: "Wait! Before you go...", description: "Grab attention with a stunning exit intent popup.", type: "POPUP", category: "Exit Intent", plan: "FREE", previewImage: "/3d_envelope.png", config: JSON.stringify({ layout: "split", hasEmailInput: true, imageUrl: "/3d_envelope.png", colors: { background: "linear-gradient(135deg, #1A1A24 0%, #0F0F13 100%)", text: "#FFFFFF", primary: "#9D4EDD" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 25px 50px -12px rgba(157, 78, 221, 0.25)", border: "1px solid rgba(157, 78, 221, 0.3)" }, content: { headline: "Wait! Before you go...", description: "Join our newsletter and get 15% off your first order instantly.", buttonText: "Get 15% Off" } }) },
+      { name: "Wait! Before you go...", description: "Grab attention with a stunning exit intent popup.", type: "POPUP", category: "Exit Intent", plan: "GROWTH", previewImage: "/3d_purple_bag.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: true, imageUrl: "/3d_purple_bag.png", colors: { background: "#f4ebff", text: "#000000", primary: "#6223e1", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 25px 50px -12px rgba(109, 40, 217, 0.25)", border: "none" }, content: { headline: "Wait! Before\nyou go...", description: "Get 15% OFF on your order.", buttonText: "Get 15% Off" } }) },
       
-      { name: "Get 10% Off", description: "A beautiful gift box offer to welcome new visitors.", type: "POPUP", category: "Discount", plan: "FREE", previewImage: "/3d_gift_box.png", config: JSON.stringify({ layout: "split", hasEmailInput: true, imageUrl: "/3d_gift_box.png", colors: { background: "#FFEDD5", text: "#431407", primary: "#F97316" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 20px 40px -10px rgba(249, 115, 22, 0.2)", border: "1px solid rgba(249, 115, 22, 0.1)" }, content: { headline: "Get 10% Off", description: "Unwrap your exclusive welcome discount. Enter your email below.", buttonText: "Claim My Gift" } }) },
+      { name: "Free Shipping", description: "Offer free shipping with an eye-catching 3D truck.", type: "POPUP", category: "Free Shipping", plan: "GROWTH", previewImage: "/3d_truck_transparent.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: false, imageUrl: "/3d_truck_transparent.png", colors: { background: "#e0f2fe", text: "#000000", primary: "#0066ff", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", border: "none" }, content: { headline: "Free Shipping\nOn All Orders", description: "Shop now and get free shipping on all orders.", buttonText: "Shop Now" } }) },
       
       { name: "Subscribe Popup", description: "A clean, modern newsletter capture.", type: "POPUP", category: "Newsletter", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1577563908411-50cb98976efe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "#ffffff", text: "#111827", primary: "#111827" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }, content: { headline: "Stay in the loop", description: "Get the latest updates, exclusive offers, and more directly to your inbox.", buttonText: "Subscribe Now" } }) },
       
       { name: "Website Redirect", description: "Clean, minimalist redirect popup.", type: "POPUP", category: "Announcement", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, colors: { background: "#ffffff", text: "#000000", primary: "#000000" }, styles: { borderRadius: "12px", padding: "32px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", border: "none" }, content: { headline: "Special Offer", description: "Click the button below to claim your offer on the next page.", buttonText: "Claim Offer", buttonUrl: "" } }) },
       
       // GROWTH
-      { name: "CYBER MONDAY", description: "Neon styled cyber monday flash sale.", type: "POPUP", category: "Sale", plan: "GROWTH", previewImage: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, colors: { background: "linear-gradient(135deg, #09090b 0%, #18181b 100%)", text: "#FFFFFF", primary: "#22d3ee" }, styles: { borderRadius: "24px", padding: "40px", boxShadow: "0 0 40px rgba(34, 211, 238, 0.2)", border: "2px solid #22d3ee" }, content: { headline: "CYBER MONDAY", description: "Everything is 50% OFF. No code required. Sale ends at midnight!", buttonText: "Shop The Sale" } }) },
+      { name: "CYBER MONDAY", description: "Neon styled cyber monday flash sale with countdown.", type: "POPUP", category: "Sale", plan: "PRO", previewImage: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, hasCountdown: true, colors: { background: "#0a0a0c", text: "#ec4899", primary: "#ec4899", buttonText: "#ffffff", shadow: "#ec4899" }, styles: { borderRadius: "16px", padding: "40px", boxShadow: "inset 0 0 20px rgba(236, 72, 153, 0.5)", border: "1px solid rgba(236, 72, 153, 0.2)" }, content: { headline: "CYBER MONDAY", subheadline: "SALE IS LIVE!", description: "Up to 60% OFF on everything.", buttonText: "Shop Now" } }) },
       
-      { name: "Hurry Up!", description: "Create massive urgency with a glowing timer.", type: "POPUP", category: "Cart Recovery", plan: "GROWTH", previewImage: "/3d_clock.png", config: JSON.stringify({ layout: "split", hasEmailInput: false, imageUrl: "/3d_clock.png", colors: { background: "linear-gradient(135deg, #4c1d95 0%, #2e1065 100%)", text: "#FFFFFF", primary: "#f43f5e" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 20px 40px rgba(244, 63, 94, 0.3)", border: "1px solid rgba(255,255,255,0.1)" }, content: { headline: "Hurry Up!", description: "Your cart is expiring soon! Complete your checkout now to secure your items.", buttonText: "Checkout Now" } }) },
+      { name: "Hurry Up!", description: "Create massive urgency with a glowing timer.", type: "POPUP", category: "Cart Recovery", plan: "GROWTH", previewImage: "/3d_clock.png", config: JSON.stringify({ layout: "split", hasEmailInput: false, imageUrl: "/3d_clock.png", colors: { background: "#9dc8d7", text: "#164e63", primary: "#ec4899", buttonText: "#ffffff" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 20px 50px rgba(236, 72, 153, 0.25)", border: "none" }, content: { headline: "Hurry Up!", description: "Your cart is expiring soon! Complete your checkout now to secure your items.", buttonText: "Checkout Now" } }) },
       
-      { name: "VIP Early Access", description: "Exclusive gradient design for VIPs.", type: "POPUP", category: "Announcement", plan: "GROWTH", previewImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "linear-gradient(45deg, #ff7e5f, #feb47b)", text: "#FFFFFF", primary: "#ffffff" }, styles: { borderRadius: "24px", padding: "40px", boxShadow: "0 10px 30px rgba(255, 126, 95, 0.4)" }, content: { headline: "VIP Early Access", description: "Enter your email to unlock the secret store before anyone else.", buttonText: "Unlock Now" } }) },
+      { name: "VIP Early Access", description: "Exclusive premium design for VIPs.", type: "POPUP", category: "Announcement", plan: "PRO", previewImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "linear-gradient(to right, #004e8f, #f29e11)", text: "#ffffff", primary: "#de923b", buttonText: "#ffffff" }, styles: { borderRadius: "24px", padding: "40px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)", border: "none" }, content: { headline: "VIP Early Access", description: "Enter your email to unlock the secret store before anyone else.", buttonText: "Unlock VIP Access" } }) },
       
       // PRO
-      { name: "Ultimate Black Friday", description: "The most aggressive sale template.", type: "POPUP", category: "Sale", plan: "PRO", previewImage: "https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "split", hasEmailInput: false, imageUrl: "https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=400&auto=format&fit=crop", colors: { background: "#000000", text: "#ffffff", primary: "#ef4444" }, styles: { borderRadius: "0px", padding: "0px", border: "4px solid #ef4444" }, content: { headline: "BLACK FRIDAY", description: "UP TO 80% OFF ENTIRE STORE. DO NOT MISS THIS.", buttonText: "SHOP NOW" } }) },
+      { name: "Ultimate Black Friday", description: "The most aggressive sale template.", type: "POPUP", category: "Sale", plan: "PRO", previewImage: "/3d_black_gift.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: false, imageUrl: "/3d_black_gift.png", colors: { background: "#111111", text: "#ffffff", primary: "#dd8801", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)", border: "none" }, content: { subheadline: "BLACK FRIDAY", headline: "MEGA SALE", description: "Up to 50% OFF on selected items!", buttonText: "Shop Now" } }) },
       
-      { name: "Spin To Win", description: "Interactive gamified popup.", type: "POPUP", category: "Lead Generation", plan: "PRO", previewImage: "https://images.unsplash.com/photo-1595328221832-72ec1eb373fb?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "#ffffff", text: "#000000", primary: "#10b981" }, styles: { borderRadius: "32px", padding: "48px", border: "8px solid #fef3c7" }, content: { headline: "Spin To Win!", description: "Enter your email for a chance to win up to $100 in store credit.", buttonText: "Spin The Wheel" } }) },
+      { name: "New Year Sale", description: "Celebrate the new year with a special offer.", type: "POPUP", category: "Sale", plan: "PRO", previewImage: "/new_year_fireworks.png", config: JSON.stringify({ layout: "background", hasEmailInput: false, imageUrl: "/new_year_fireworks.png", colors: { background: "#050505", text: "#ffffff", primary: "#E0C070", buttonText: "#000000", headlineText: "#E0C070" }, styles: { borderRadius: "16px", padding: "32px", border: "1px solid #E0C070", boxShadow: "0 10px 30px rgba(224, 192, 112, 0.15)" }, content: { subheadline: "New Year Sale", headline: "Flat 30% OFF", description: "On All Orders", buttonText: "Shop Now" } }) },
       
-      { name: "Mystery Box", description: "Intriguing design to capture curiosity.", type: "POPUP", category: "Offer", plan: "PRO", previewImage: "/3d_gift_box.png", config: JSON.stringify({ layout: "split", hasEmailInput: true, imageUrl: "/3d_gift_box.png", colors: { background: "#18181b", text: "#a1a1aa", primary: "#eab308" }, styles: { borderRadius: "20px", padding: "0", boxShadow: "0 0 50px rgba(234, 179, 8, 0.15)" }, content: { headline: "Claim Your Mystery Box", description: "We have a surprise waiting for you. What's inside? Enter your email to find out.", buttonText: "Reveal Mystery" } }) }
+      { name: "Clover Offer", description: "St. Patrick's Day Special Offer design.", type: "POPUP", category: "Offer", plan: "PRO", previewImage: "/3d_clover.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: true, imageUrl: "/3d_clover.png", colors: { background: "radial-gradient(circle at 30% 50%, #0f4b23 0%, #041a0b 100%)", text: "#ffffff", headlineText: "#3ae168", primary: "#00a845", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 25px 50px -12px rgba(0, 168, 69, 0.25)", border: "none" }, content: { headline: "St. Patrick's Day\nSpecial Offer", description: "Get 25% OFF on your order.", buttonText: "Claim Offer" } }) }
     ];
 
     for (const t of seedTemplates) {
@@ -75,12 +86,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return data({ error: "Template not found" }, { status: 404 });
     }
 
+    const pConfig = JSON.parse(template.config);
+    pConfig.templatePlan = template.plan;
+    pConfig.templateName = template.name;
+
     const newPopup = await db.popup.create({
       data: {
         shop: session.shop,
-        name: `My ${template.name}`,
+        name: template.name,
         status: "UNSAVED",
-        config: template.config,
+        config: JSON.stringify(pConfig),
       },
     });
 
@@ -227,12 +242,13 @@ export default function Templates() {
                   return (
                     <div style={{
                       ...pConfig.colors,
-                      background: pConfig.colors.background,
+                      background: pConfig.layout === "background" && pConfig.imageUrl ? `${pConfig.colors.background || '#000'} url(${pConfig.imageUrl}) center/100% 100% no-repeat` : pConfig.colors.background,
                       color: pConfig.colors.text,
                       width: "100%",
                       height: "100%",
                       display: "flex",
                       flexDirection: pConfig.layout === "split" ? "row" : "column",
+                      alignItems: pConfig.layout === "background" ? "center" : "stretch",
                       overflow: "hidden",
                       pointerEvents: "none",
                       boxSizing: "border-box"
@@ -242,22 +258,39 @@ export default function Templates() {
                           <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         </div>
                       )}
-                      <div style={{ flex: pConfig.layout === "split" ? 1 : undefined, width: "100%", height: "100%", padding: "20px", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
-                        {pConfig.layout !== "split" && pConfig.imageUrl && (
-                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "80px", objectFit: "contain", marginBottom: "12px" }} />
+                      <div style={{ flex: pConfig.layout === "split" ? 1 : undefined, width: "100%", height: "100%", padding: pConfig.layout === "split" ? "16px" : "20px", textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: pConfig.layout === "image-bottom-right" ? "flex-start" : "center", boxSizing: "border-box", position: "relative", zIndex: 2 }}>
+                        {pConfig.layout === "image-bottom-right" && pConfig.imageUrl && (
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={tpl.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: "0px", width: "50%", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: "0px", right: "0px", width: "130px", height: "auto", objectFit: "contain", zIndex: 1 }} />
                         )}
-                        <div style={{ margin: "0 0 10px 0", fontSize: "18px", fontWeight: "bold", color: pConfig.colors.text, lineHeight: "1.2" }}>{pConfig.content.headline}</div>
-                        <p style={{ color: pConfig.colors.text, margin: "0 0 12px 0", fontSize: "13px", lineHeight: "1.4", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{pConfig.content.description}</p>
+                        {pConfig.layout !== "split" && pConfig.layout !== "image-bottom-right" && pConfig.layout !== "background" && pConfig.imageUrl && (
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "70px", objectFit: "contain", marginBottom: "8px" }} />
+                        )}
+                        <div style={{ margin: "0 0 6px 0", fontSize: "16px", fontWeight: "bold", color: tpl.name.includes("New Year Sale") ? pConfig.colors.text : (pConfig.colors.headlineText || pConfig.colors.text), lineHeight: "1.2", whiteSpace: "pre-wrap", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.headline}</div>
+                        {pConfig.content.subheadline && (
+                          <div style={{ fontSize: "13px", fontWeight: "bold", margin: "-4px 0 6px 0", color: tpl.name.includes("New Year Sale") ? pConfig.colors.text : pConfig.colors.primary, lineHeight: "1.2", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.subheadline}</div>
+                        )}
+                        <p style={{ color: tpl.name.includes("New Year Sale") ? (pConfig.colors.background && (() => { const hex = pConfig.colors.background.replace('#', ''); const r = parseInt(hex.substring(0,2), 16) || 0; const g = parseInt(hex.substring(2,4), 16) || 0; const b = parseInt(hex.substring(4,6), 16) || 0; return ((r * 299 + g * 587 + b * 114) / 1000 >= 128) ? '#000' : '#fff'; })()) : pConfig.colors.text, margin: "0 0 8px 0", fontSize: "12px", lineHeight: "1.3", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", maxWidth: pConfig.layout === "image-bottom-right" ? "60%" : "none", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.description}</p>
+                        
+                        {pConfig.hasCountdown && (
+                          <div style={{ display: "flex", justifyContent: "center", gap: "4px", margin: "4px 0 8px 0" }}>
+                            {[{ l: "D", v: "02" }, { l: "H", v: "14" }, { l: "M", v: "36" }, { l: "S", v: "52" }].map((u, i) => (
+                              <div key={i} style={{ backgroundColor: "#1a1a1f", borderRadius: "4px", padding: "4px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.05)", minWidth: "24px" }}>
+                                <span style={{ fontSize: "11px", fontWeight: "bold", color: "#ffffff", lineHeight: "1" }}>{u.v}</span>
+                                <span style={{ fontSize: "7px", color: "#a1a1aa", marginTop: "2px" }}>{u.l}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         
                         {pConfig.hasEmailInput && (
-                          <div style={{ padding: "8px", marginBottom: "10px", width: "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontSize: "12px", color: "#888", textAlign: "left", backgroundColor: "#fff" }}>
+                          <div style={{ padding: "6px 8px", marginBottom: "8px", width: pConfig.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontSize: "11px", color: "#888", textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", backgroundColor: "#fff", position: "relative", zIndex: 2 }}>
                             Enter your email
                           </div>
                         )}
                         
                         <div style={{
-                          padding: "8px 16px", width: "100%", border: "none", borderRadius: "4px",
-                          backgroundColor: pConfig.colors.primary, color: "#fff", fontWeight: "bold", fontSize: "13px", boxSizing: "border-box"
+                          padding: "6px 12px", width: pConfig.layout === "image-bottom-right" || pConfig.layout === "background" ? "max-content" : "100%", border: "none", borderRadius: "4px",
+                          backgroundColor: pConfig.colors.primary, color: "#fff", fontWeight: "bold", fontSize: "12px", boxSizing: "border-box", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", alignSelf: pConfig.layout === "image-bottom-right" ? "flex-start" : "center"
                         }}>
                           {pConfig.content.buttonText}
                         </div>
@@ -348,47 +381,80 @@ export default function Templates() {
               {/* Fake Overlay */}
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {/* Rendered Template */}
-                <div style={{
-                  ...JSON.parse(previewTemplate.config).colors,
-                  ...JSON.parse(previewTemplate.config).styles,
-                  background: JSON.parse(previewTemplate.config).colors.background,
-                  color: JSON.parse(previewTemplate.config).colors.text,
-                  width: JSON.parse(previewTemplate.config).layout === "split" ? "600px" : "90%",
-                  maxWidth: JSON.parse(previewTemplate.config).layout === "split" ? "600px" : "400px",
-                  display: "flex",
-                  flexDirection: JSON.parse(previewTemplate.config).layout === "split" ? "row" : "column",
-                  overflow: "hidden"
-                }}>
-                  {JSON.parse(previewTemplate.config).layout === "split" && JSON.parse(previewTemplate.config).imageUrl && (
-                    <div style={{ flex: 1 }}>
-                      <img src={JSON.parse(previewTemplate.config).imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    </div>
-                  )}
-                  <div style={{ flex: 1, padding: "24px", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                    {JSON.parse(previewTemplate.config).layout !== "split" && JSON.parse(previewTemplate.config).imageUrl && (
-                      <img src={JSON.parse(previewTemplate.config).imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
-                    )}
-                    <div style={{ margin: "0 0 16px 0", fontSize: "24px", fontWeight: "bold", color: JSON.parse(previewTemplate.config).colors.text }}>{JSON.parse(previewTemplate.config).content.headline}</div>
-                    <p style={{ color: JSON.parse(previewTemplate.config).colors.text, marginBottom: "16px" }}>{JSON.parse(previewTemplate.config).content.description}</p>
-                    
-                    {JSON.parse(previewTemplate.config).hasEmailInput && (
-                      <input 
-                        type="email" 
-                        placeholder="Enter your email" 
-                        style={{ padding: "10px", marginBottom: "12px", width: "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box" }}
-                      />
-                    )}
-                    
-                    <button style={{
-                      padding: "10px 20px", width: "100%", border: "none", borderRadius: "4px",
-                      backgroundColor: JSON.parse(previewTemplate.config).colors.primary, color: "#fff", fontWeight: "bold"
+                {(() => {
+                  const pConfig = JSON.parse(previewTemplate.config);
+                  const isMobile = previewDevice === "mobile";
+                  return (
+                    <div style={{
+                      ...pConfig.colors,
+                      ...pConfig.styles,
+                      background: pConfig.layout === "background" && pConfig.imageUrl ? `${pConfig.colors.background || 'transparent'} url('${pConfig.imageUrl}') center/100% 100% no-repeat` : pConfig.colors.background,
+                      color: pConfig.colors.text,
+                      width: pConfig.layout === "split" ? (isMobile ? "90%" : "600px") : (pConfig.layout === "background" ? (isMobile ? "90%" : "400px") : "90%"),
+                      maxWidth: pConfig.layout === "split" ? (isMobile ? "400px" : "600px") : (pConfig.layout === "background" ? (isMobile ? "400px" : "400px") : "400px"),
+                      minHeight: pConfig.layout === "background" ? (isMobile ? "auto" : "360px") : "auto",
+                      display: "flex",
+                      flexDirection: pConfig.layout === "split" ? (isMobile ? "column" : "row") : "column",
+                      alignItems: pConfig.layout === "background" ? "flex-end" : "stretch",
+                      overflow: "hidden",
+                      position: "relative"
                     }}>
-                      {JSON.parse(previewTemplate.config).content.buttonText}
-                    </button>
-                  </div>
-                </div>
+                      {pConfig.layout === "split" && pConfig.imageUrl && (
+                        <div style={{ flex: 1, width: "100%", height: isMobile ? "200px" : "auto" }}>
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        </div>
+                      )}
+                      {pConfig.layout === "image-bottom-right" && pConfig.imageUrl && (
+                        <img src={pConfig.imageUrl} alt="Popup Image" style={previewTemplate.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: isMobile ? "0px" : "-5px", width: isMobile ? "65%" : "65%", maxWidth: isMobile ? "180px" : "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: isMobile ? "40px" : "40px", right: isMobile ? "0px" : "0px", width: isMobile ? "55%" : "55%", maxWidth: isMobile ? "180px" : "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
+                      )}
+                      <div style={{ flex: 1, width: pConfig.layout === "background" ? "100%" : "auto", height: "100%", padding: pConfig.layout === "split" ? (isMobile ? "16px" : "24px") : pConfig.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px"), textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: pConfig.layout === "background" ? "0px" : "16px", justifyContent: "center", alignItems: pConfig.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+                        {pConfig.layout !== "split" && pConfig.layout !== "image-bottom-right" && pConfig.layout !== "background" && pConfig.imageUrl && (
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
+                        )}
+                        <div style={{ margin: 0, fontSize: isMobile ? "20px" : "24px", fontWeight: "bold", lineHeight: "1.3", wordBreak: "break-word", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? (pConfig.colors.text || "#000000") : (pConfig.colors.headlineText || pConfig.colors.text), position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>
+                          {(pConfig.content.headline || "").split('\n').map((line, i) => (
+                            <span key={i}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </div>
+                        {pConfig.content.subheadline && (
+                          <div style={{ margin: "0 0 8px 0", fontSize: isMobile ? "16px" : "20px", fontWeight: "bold", lineHeight: "1.2", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? (pConfig.colors.text || "#000000") : pConfig.colors.primary, position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>{pConfig.content.subheadline}</div>
+                        )}
+                        <p style={{ margin: 0, fontSize: isMobile ? "14px" : "16px", lineHeight: "1.5", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(pConfig.colors.background || "#050505") : pConfig.colors.text, maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.description}</p>
+                        
+                        {pConfig.hasCountdown && (
+                          <div style={{ display: "flex", justifyContent: "center", gap: "12px", margin: "8px 0 16px 0" }}>
+                            {[{ l: "Days", v: "02" }, { l: "Hours", v: "14" }, { l: "Mins", v: "36" }, { l: "Secs", v: "52" }].map((u, i) => (
+                              <div key={i} style={{ backgroundColor: "#1a1a1f", borderRadius: "8px", padding: "12px 16px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.05)", minWidth: "48px" }}>
+                                <span style={{ fontSize: "20px", fontWeight: "bold", color: "#ffffff", lineHeight: "1" }}>{u.v}</span>
+                                <span style={{ fontSize: "10px", color: "#a1a1aa", marginTop: "4px", textTransform: "uppercase" }}>{u.l}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {pConfig.hasEmailInput && (
+                          <input 
+                            type="email" 
+                            placeholder="Enter your email" 
+                            style={{ padding: "10px", width: pConfig.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none", textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}
+                            readOnly
+                          />
+                        )}
+                        
+                        <div style={{
+                          padding: isMobile ? "8px 16px" : "12px 24px", width: pConfig.layout === "image-bottom-right" || pConfig.layout === "background" ? "max-content" : "100%", maxWidth: pConfig.layout === "image-bottom-right" ? "55%" : "none", border: "none", borderRadius: "4px",
+                          backgroundColor: pConfig.colors.primary, color: "#fff", fontWeight: "bold", fontSize: isMobile ? "14px" : "16px", whiteSpace: "nowrap", boxSizing: "border-box", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", alignSelf: pConfig.layout === "image-bottom-right" ? "flex-start" : "center"
+                        }}>
+                          {pConfig.content.buttonText}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
-
             </div>
           </div>
         </div>

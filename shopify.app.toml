@@ -2,15 +2,15 @@
 
 client_id = "ada962613fe24090b2c6a9a36963e797"
 name = "Popup Builder"
-application_url = "https://example.com"
-embedded = true
+application_url = "https://pop-up-builder-five.vercel.app"
+embedded = false
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "read_themes,write_themes,write_products,write_metaobjects,write_metaobject_definitions"
 
 [app_proxy]
-url = "https://example.com/api/storefront"
+url = "https://pop-up-builder-five.vercel.app/api/storefront"
 subpath = "popup-builder"
 prefix = "apps"
 
@@ -50,13 +50,12 @@ api_version = "2026-10"
   topics = [ "app/scopes_update" ]
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://pop-up-builder-five.vercel.app/auth/callback", "https://pop-up-builder-five.vercel.app/auth/shopify/callback", "https://pop-up-builder-five.vercel.app/api/auth/callback" ]
 
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true
 
 [webhooks.privacy_compliance]
-customer_deletion_url = "https://example.com/webhooks/customers/redact"
-customer_data_request_url = "https://example.com/webhooks/customers/data_request"
-shop_deletion_url = "https://example.com/webhooks/shop/redact"
+customer_deletion_url = "https://pop-up-builder-five.vercel.app/webhooks/customers/redact"
+customer_data_request_url = "https://pop-up-builder-five.vercel.app/webhooks/customers/data_request"
+shop_deletion_url = "https://pop-up-builder-five.vercel.app/webhooks/shop/redact"

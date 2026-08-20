@@ -2,8 +2,7 @@ import { type LoaderFunctionArgs, type ActionFunctionArgs, data, redirect } from
 import { useLoaderData, useFetcher, useNavigate } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   const shop = session.shop;
@@ -109,6 +108,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (!popup) return data({ error: "Popup not found" }, { status: 404 });
 
     const newStatus = currentStatus === "ACTIVE" ? "PAUSED" : "ACTIVE";
+
+    if (newStatus === "ACTIVE") {
+      const subscription = await db.subscription.findUnique({ where: { shop: session.shop } });
+      const plan = (subscription?.plan as any) || "FREE";
+      
+      const activeCount = await db.popup.count({ where: { shop: session.shop, status: "ACTIVE" } });
+      const { canCreatePopup } = await import("../lib/entitlements");
+      if (!canCreatePopup(activeCount, plan)) {
+         return data({ error: `Plan limit reached. Your ${plan} plan allows maximum active popups.` }, { status: 400 });
+      }
+    }
+
     const updated = await db.popup.update({
       where: { id: popupId, shop: session.shop },
       data: { status: newStatus },
@@ -149,6 +160,12 @@ export default function Dashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isPro = subscription.plan === "PRO";
+
+  useEffect(() => {
+    if (fetcher.data?.error) {
+      shopify.toast.show(fetcher.data.error, { isError: true });
+    }
+  }, [fetcher.data]);
 
   const handleCreateFromScratch = () => {
     fetcher.submit({ intent: "create_scratch" }, { method: "post" });

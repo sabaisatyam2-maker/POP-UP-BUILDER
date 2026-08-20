@@ -46,19 +46,19 @@ export default function Pricing() {
       name: "FREE",
       price: "$0/mo",
       description: "Perfect for getting started.",
-      features: ["1 Active Popup", "Basic Templates", "Standard Support"],
+      features: ["1 Active Popup", "Basic Popup Layouts", "Content Customization", "URL Redirects", "Page Targeting"],
     },
     {
       name: "GROWTH",
-      price: "$9/mo",
+      price: "$18/mo",
       description: "For growing stores.",
-      features: ["5 Active Popups", "Growth Templates", "Email Capture", "Priority Support"],
+      features: ["5 Active Popups", "CSS Customization", "Image Uploads", "Advanced Settings", "Attractive Templates"],
     },
     {
       name: "PRO",
-      price: "$29/mo",
+      price: "$23/mo",
       description: "For power users.",
-      features: ["Unlimited Popups", "Premium Templates", "Advanced Analytics", "Custom CSS", "24/7 Support"],
+      features: ["Unlimited Popups", "All Templates Access", "Advanced Templates", "Gradient Backgrounds", "Advanced Triggers", "Countdown Timers"],
     }
   ];
 

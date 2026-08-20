@@ -83,3 +83,32 @@
 .pb-cta:hover {
   opacity: 0.9;
 }
+
+@media (max-width: 480px) {
+  .pb-canvas {
+    width: 90% !important;
+    padding: 16px !important;
+  }
+  .pb-headline {
+    font-size: 20px !important;
+  }
+  .pb-subheadline {
+    font-size: 16px !important;
+  }
+  .pb-description {
+    font-size: 14px !important;
+  }
+  .pb-mobile-img {
+    width: 50% !important;
+    max-width: 150px !important;
+    bottom: 32px !important;
+    right: 8px !important;
+  }
+  .pb-mobile-text {
+    max-width: 58% !important;
+  }
+  .pb-mobile-btn {
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+  }
+}

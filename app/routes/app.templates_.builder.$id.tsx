@@ -2,7 +2,7 @@ import { type LoaderFunctionArgs, type ActionFunctionArgs, data, redirect } from
 import { useLoaderData, useFetcher, useNavigate } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getEntitlements, type PlanType } from "../lib/entitlements";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -39,6 +39,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return data({ error: "Invalid form data" }, { status: 400 });
   }
 
+  if (status === "ACTIVE") {
+    const subscription = await db.subscription.findUnique({ where: { shop: session.shop } });
+    const plan = (subscription?.plan as any) || "FREE";
+    
+    // Count active popups EXCLUDING the current one (in case it is already active and just being updated)
+    const activeCount = await db.popup.count({ 
+      where: { shop: session.shop, status: "ACTIVE", id: { not: id as string } } 
+    });
+    const { canCreatePopup } = await import("../lib/entitlements");
+    if (!canCreatePopup(activeCount, plan)) {
+      return data({ error: `Plan limit reached. Your ${plan} plan allows maximum active popups.` }, { status: 400 });
+    }
+  }
+
   const updatedPopup = await db.popup.update({
     where: { id: id as string, shop: session.shop },
     data: {
@@ -59,6 +73,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return data({ success: true, popup: updatedPopup });
 };
 
+export function getContrastColor(hex: string) {
+  if (!hex) return '#000000';
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  if (hex.length !== 6) return '#000000';
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  return (yiq >= 128) ? '#000000' : '#FFFFFF';
+}
+
 export default function Builder() {
   const { popup, plan, entitlements } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
@@ -66,6 +92,44 @@ export default function Builder() {
 
   const [name, setName] = useState(popup.name);
   const [config, setConfig] = useState(JSON.parse(popup.config));
+
+  useEffect(() => {
+    if (fetcher.data?.error) {
+      shopify.toast.show(fetcher.data.error, { isError: true });
+    }
+  }, [fetcher.data]);
+
+  const getContrastColorLocal = (bg: string) => {
+    if (bg.includes('gradient')) {
+      if (bg.includes('white') || bg.includes('#fff') || bg.includes('#ffffff') || bg.includes('transparent')) return "#000000";
+      return "#ffffff";
+    }
+    return getContrastColor(bg);
+  };
+
+  const updateShadowColor = (newColor: string) => {
+    const currentShadow = config.styles?.boxShadow || "0 4px 12px rgba(0,0,0,0.15)";
+    const newShadow = currentShadow.replace(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*([\d.]+)\s*)?\)/g, (match, p1) => {
+      const alpha = p1 ? parseFloat(p1) : 1;
+      let r = 0, g = 0, b = 0;
+      if (newColor.length === 4) {
+        r = parseInt(newColor[1] + newColor[1], 16);
+        g = parseInt(newColor[2] + newColor[2], 16);
+        b = parseInt(newColor[3] + newColor[3], 16);
+      } else if (newColor.length === 7) {
+        r = parseInt(newColor.slice(1, 3), 16);
+        g = parseInt(newColor.slice(3, 5), 16);
+        b = parseInt(newColor.slice(5, 7), 16);
+      }
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    });
+    
+    setConfig({ 
+      ...config, 
+      colors: { ...config.colors, shadow: newColor }, 
+      styles: { ...config.styles, boxShadow: newShadow } 
+    });
+  };
 
   const handleSave = (status: string = "DRAFT", intent: string = "save") => {
     const finalStatus = (status === "UNSAVED" && intent === "save") ? "DRAFT" : status;
@@ -122,12 +186,11 @@ export default function Builder() {
           >
             ← Back
           </button>
-          <input 
-            type="text" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            style={{ fontSize: "18px", fontWeight: "bold", border: "none", outline: "none", backgroundColor: "transparent", color: "#FFFFFF" }}
-          />
+          <span 
+            style={{ fontSize: "18px", fontWeight: "bold", color: "#FFFFFF" }}
+          >
+            {name}
+          </span>
           <span style={{ fontSize: "12px", padding: "2px 8px", backgroundColor: "#3A3A4A", color: "#FFFFFF", borderRadius: "12px" }}>{plan} Plan</span>
         </div>
         <div style={{ display: "flex", gap: "12px" }}>
@@ -164,14 +227,17 @@ export default function Builder() {
             style={{
               position: "relative",
               zIndex: 10,
-              background: config.colors?.background || "#ffffff",
+              background: config.layout === "background" && config.imageUrl ? `${config.colors?.background || '#000'} url(${config.imageUrl}) center/100% 100% no-repeat` : (config.colors?.background || "#ffffff"),
               color: config.colors?.text || "#000000",
               borderRadius: config.styles?.borderRadius || "8px",
               padding: config.styles?.padding || "24px",
               boxShadow: config.styles?.boxShadow || "0 4px 12px rgba(0,0,0,0.15)",
               width: config.layout === "split" ? "600px" : "400px",
+              minHeight: "360px",
               display: "flex",
               flexDirection: config.layout === "split" ? "row" : "column",
+              alignItems: config.layout === "background" ? "center" : "stretch",
+              overflow: "hidden"
             }}
           >
             {/* NON-NEGOTIABLE CLOSE BUTTON RULE */}
@@ -199,28 +265,71 @@ export default function Builder() {
             >
               &times;
             </button>
-
-            {/* Split Image area (if applicable) */}
-            {config.layout === "split" && (
-              <div style={{ flex: 1, backgroundColor: "#f4f6f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                {config.imageUrl ? (
-                  <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                  <span style={{ color: "#8c9196" }}>Image Area</span>
-                )}
+            {config.layout === "image-bottom-right" && (
+              <style>{`
+                @media (max-width: 480px) {
+                  .pb-mobile-img {
+                    width: 50% !important;
+                    max-width: 150px !important;
+                    bottom: 32px !important;
+                    right: 8px !important;
+                  }
+                  .pb-mobile-text {
+                    max-width: 58% !important;
+                  }
+                  .pb-mobile-btn {
+                    padding: 8px 16px !important;
+                    font-size: 14px !important;
+                  }
+                }
+              `}</style>
+            )}  {/* Layout Rendering */}
+            {config.layout === "split" && config.imageUrl && (
+              <div style={{ flex: 1, backgroundColor: "#f4f6f8" }}>
+                <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
             )}
+            {config.layout === "image-bottom-right" && config.imageUrl && (
+              <img src={config.imageUrl} className="pb-mobile-img" alt="Popup Image" style={popup.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: "-5px", width: "65%", maxWidth: "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: "40px", right: "0px", width: "55%", maxWidth: "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
+            )}
 
-            <div style={{ flex: 1, padding: config.layout === "split" ? "24px" : "0", textAlign: "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center" }}>
-              {config.layout !== "split" && config.imageUrl && (
+            <div style={{ flex: 1, width: config.layout === "background" ? "100%" : "auto", padding: config.layout === "split" ? "32px" : config.layout === "image-bottom-right" ? "24px 24px 24px 0px" : "24px", textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+              {config.layout !== "split" && config.layout !== "image-bottom-right" && config.layout !== "background" && config.imageUrl && (
                 <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
               )}
               
-              <div style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: (config.colors?.background === "#ffffff" ? "#000000" : "#ffffff"), wordBreak: "break-word" }}>
-                {config.content?.headline || "Headline"}
+              <div className="pb-headline pb-mobile-text" style={{ fontSize: "24px", fontWeight: "bold", margin: 0, lineHeight: "1.3", color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.headlineText || config.colors?.text || "#000000"), wordBreak: "break-word", textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none" }}>
+                {(config.content?.headline || "Headline").split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
               </div>
+
+              {config.content.subheadline && (
+                <div className="pb-subheadline pb-mobile-text" style={{ margin: "0 0 8px 0", fontSize: "20px", fontWeight: "bold", lineHeight: "1.2", color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.primary || "#000000"), position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none" }}>
+                  {config.content.subheadline}
+                </div>
+              )}
               
-              <p style={{ margin: 0, color: (config.colors?.background === "#ffffff" ? "#000000" : "#ffffff"), wordBreak: "break-word" }}>
+              {popup.name.includes("CYBER MONDAY") && (
+                <div style={{ display: "flex", justifyContent: "center", gap: "12px", margin: "8px 0" }}>
+                  {[
+                    { label: "Days", value: "02" },
+                    { label: "Hours", value: "14" },
+                    { label: "Minutes", value: "35" },
+                    { label: "Seconds", value: "59" }
+                  ].map((unit, idx) => (
+                    <div key={idx} style={{ backgroundColor: "#1a1a1f", borderRadius: "8px", padding: "12px 16px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.05)", minWidth: "48px" }}>
+                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ffffff", lineHeight: "1" }}>{unit.value}</div>
+                      <div style={{ fontSize: "10px", color: "#a1a1aa", marginTop: "4px", textTransform: "uppercase" }}>{unit.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <p className="pb-description pb-mobile-text" style={{ margin: 0, color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(config.colors?.background || "#050505") : (config.colors?.text || "#000000"), wordBreak: "break-word", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none", position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}>
                 {config.content?.description || "Description text goes here."}
               </p>
 
@@ -228,20 +337,25 @@ export default function Builder() {
                 <input 
                   type="email" 
                   placeholder="Enter your email" 
-                  style={{ padding: "10px", width: "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none" }}
+                  style={{ padding: "10px", width: config.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none", textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}
                   readOnly
                 />
               )}
 
               <button 
+                className="pb-cta pb-mobile-btn"
                 style={{
                   padding: "12px 24px",
                   backgroundColor: config.colors?.primary || "#000000",
-                  color: (config.colors?.primary === "#ffffff") ? "#000000" : "#ffffff",
+                  color: config.colors?.buttonText || getContrastColor(config.colors?.primary || "#000000"),
                   border: "none",
                   borderRadius: "4px",
                   fontWeight: "bold",
-                  wordBreak: "break-word"
+                  wordBreak: "break-word",
+                  whiteSpace: "nowrap",
+                  alignSelf: config.layout === "image-bottom-right" ? "flex-start" : "center",
+                  width: (config.layout === "modal" || config.layout === "split") ? "100%" : "max-content",
+                  maxWidth: config.layout === "image-bottom-right" ? "55%" : "none"
                 }}
               >
                 {config.content?.buttonText || "Submit"}
@@ -260,23 +374,52 @@ export default function Builder() {
             
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Headline</label>
-              <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.headline?.length || 0}/100</span>
+              <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.headline?.length || 0}/{config.layout === "image-bottom-right" ? 40 : 100}</span>
             </div>
             <input 
               type="text" 
               value={config.content.headline} 
-              maxLength={100}
+              maxLength={config.layout === "image-bottom-right" ? 40 : 100}
               onChange={(e) => setConfig({ ...config, content: { ...config.content, headline: e.target.value } })}
               style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
             />
 
+            {(popup.name.includes("CYBER MONDAY") || popup.name === "Ultimate Black Friday" || popup.name === "New Year Sale") && (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: "4px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Subheadline</label>
+                  <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.subheadline?.length || 0}/100</span>
+                </div>
+                <input 
+                  type="text" 
+                  value={config.content.subheadline || ""} 
+                  maxLength={100}
+                  onChange={(e) => setConfig({ ...config, content: { ...config.content, subheadline: e.target.value } })}
+                  style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
+                />
+              </>
+            )}
+
+            {popup.name.includes("CYBER MONDAY") && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Timer End Date</label>
+                <input 
+                  type="datetime-local" 
+                  value={config.content.countdownTarget || ""} 
+                  onChange={(e) => setConfig({ ...config, content: { ...config.content, countdownTarget: e.target.value } })}
+                  style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", colorScheme: "dark" }}
+                />
+                <span style={{ fontSize: "11px", color: "#A0A0AB" }}>If not set, timer defaults to 48 hours.</span>
+              </div>
+            )}
+
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: "4px" }}>
               <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Description</label>
-              <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.description?.length || 0}/400</span>
+              <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.description?.length || 0}/{config.layout === "image-bottom-right" ? 120 : 400}</span>
             </div>
             <textarea 
               value={config.content.description} 
-              maxLength={400}
+              maxLength={config.layout === "image-bottom-right" ? 120 : 400}
               onChange={(e) => setConfig({ ...config, content: { ...config.content, description: e.target.value } })}
               style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", minHeight: "80px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
             />
@@ -301,6 +444,33 @@ export default function Builder() {
               onChange={(e) => setConfig({ ...config, content: { ...config.content, buttonUrl: e.target.value } })}
               style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
             />
+
+            {popup.name === "Hurry Up!" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Custom Image</label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                        alert("File size is too large. Please upload an image smaller than 2MB.");
+                        e.target.value = ''; // Reset input
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setConfig({ ...config, imageUrl: reader.result as string });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", fontSize: "12px" }}
+                />
+                <span style={{ fontSize: "11px", color: "#A0A0AB" }}>Max 2MB (Auto-fits)</span>
+              </div>
+            )}
           </div>
 
           {/* Design Section */}
@@ -309,31 +479,158 @@ export default function Builder() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Popup Background Color</label>
-              <select 
-                value={config.colors.background} 
-                onChange={(e) => {
-                  const bg = e.target.value;
-                  const text = bg === "#ffffff" ? "#000000" : "#ffffff";
-                  setConfig({ ...config, colors: { ...config.colors, background: bg, text: text } });
-                }}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
-              >
-                <option value="#ffffff">White</option>
-                <option value="#000000">Black</option>
-              </select>
+              {plan !== "FREE" ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  {(popup.name === "Clover Offer" || popup.name === "VIP Early Access") ? (
+                    <>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <div style={{ position: "relative", width: "38px", height: "38px", borderRadius: "4px", overflow: "hidden", border: "1px solid #3A3A4A" }}>
+                          <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: config.colors.background, pointerEvents: "none" }} />
+                          <input 
+                            type="color"
+                            value={config.colors.background?.startsWith('#') && (config.colors.background.length === 7 || config.colors.background.length === 4) ? config.colors.background : "#ffffff"}
+                            onChange={(e) => {
+                              const bg = e.target.value;
+                              const text = getContrastColor(bg);
+                              setConfig({ ...config, colors: { ...config.colors, background: bg, text: text } });
+                            }}
+                            style={{ position: "absolute", top: "-10px", left: "-10px", width: "60px", height: "60px", opacity: 0, cursor: "pointer" }}
+                          />
+                        </div>
+                        <input 
+                          type="text"
+                          value={config.colors.background}
+                          onChange={(e) => {
+                            const bg = e.target.value;
+                            const text = getContrastColor(bg);
+                            setConfig({ ...config, colors: { ...config.colors, background: bg, text: text } });
+                          }}
+                          style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                        />
+                      </div>
+                      <span style={{ fontSize: "11px", color: "#A0A0AB" }}>*Here you can use gradient feature also.</span>
+                    </>
+                  ) : (
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <input 
+                        type="color"
+                        value={config.colors.background?.startsWith('#') && (config.colors.background.length === 7 || config.colors.background.length === 4) ? config.colors.background : "#ffffff"}
+                        onChange={(e) => {
+                          const bg = e.target.value;
+                          const text = getContrastColor(bg);
+                          setConfig({ ...config, colors: { ...config.colors, background: bg, text: text } });
+                        }}
+                        style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                      />
+                      <input 
+                        type="text"
+                        value={config.colors.background}
+                        onChange={(e) => {
+                          const bg = e.target.value;
+                          if (bg.includes("gradient")) {
+                            alert("Gradient feature is exclusively available for VIP Early Access and Clover Offer templates.");
+                            return;
+                          }
+                          const text = getContrastColor(bg);
+                          setConfig({ ...config, colors: { ...config.colors, background: bg, text: text } });
+                        }}
+                        style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <select 
+                  value={config.colors.background} 
+                  onChange={(e) => {
+                    const bg = e.target.value;
+                    const text = bg === "#ffffff" ? "#000000" : "#ffffff";
+                    setConfig({ ...config, colors: { ...config.colors, background: bg, text: text } });
+                  }}
+                  style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
+                >
+                  <option value="#ffffff">White</option>
+                  <option value="#000000">Black</option>
+                </select>
+              )}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "4px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Background Color</label>
-              <select 
-                value={config.colors.primary} 
-                onChange={(e) => setConfig({ ...config, colors: { ...config.colors, primary: e.target.value } })}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
-              >
-                <option value="#000000">Black</option>
-                <option value="#ffffff">White</option>
-              </select>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Text Color</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input 
+                  type="color"
+                  value={config.colors.text?.startsWith('#') && (config.colors.text.length === 7 || config.colors.text.length === 4) ? config.colors.text : "#ffffff"}
+                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, text: e.target.value } })}
+                  style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                />
+                <input 
+                  type="text"
+                  value={config.colors.text || "#000000"} 
+                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, text: e.target.value } })}
+                  style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                />
+              </div>
             </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Background Color</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input 
+                  type="color"
+                  value={config.colors.primary?.startsWith('#') && (config.colors.primary.length === 7 || config.colors.primary.length === 4) ? config.colors.primary : "#ffffff"}
+                  onChange={(e) => {
+                    const bg = e.target.value;
+                    const bText = getContrastColor(bg);
+                    setConfig({ ...config, colors: { ...config.colors, primary: bg, buttonText: bText } });
+                  }}
+                  style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                />
+                <input 
+                  type="text"
+                  value={config.colors.primary} 
+                  onChange={(e) => {
+                    const bg = e.target.value;
+                    const bText = getContrastColor(bg);
+                    setConfig({ ...config, colors: { ...config.colors, primary: bg, buttonText: bText } });
+                  }}
+                  style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Text Color</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input 
+                  type="color"
+                  value={config.colors.buttonText?.startsWith('#') && (config.colors.buttonText.length === 7 || config.colors.buttonText.length === 4) ? config.colors.buttonText : "#ffffff"}
+                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, buttonText: e.target.value } })}
+                  style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                />
+                <input 
+                  type="text"
+                  value={config.colors.buttonText || getContrastColor(config.colors.primary)} 
+                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, buttonText: e.target.value } })}
+                  style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
+            {popup.name.includes("CYBER MONDAY") && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Box Shadow Color</label>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input 
+                    type="color"
+                    value={config.colors.shadow || "#ec4899"}
+                    onChange={(e) => updateShadowColor(e.target.value)}
+                    style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                  />
+                  <span style={{ fontSize: "13px", color: "#E0E0E0" }}>{config.colors.shadow || "#ec4899"}</span>
+                </div>
+              </div>
+            )}
             
             {!entitlements.customCSS && renderLocked("Custom CSS (Pro)")}
           </div>
@@ -356,6 +653,21 @@ export default function Builder() {
                 <option value="center">Center</option>
                 <option value="bottom">Bottom</option>
                 <option value="bottom-right">Bottom Right</option>
+              </select>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Display Frequency</label>
+              </div>
+              <select 
+                value={config.displayFrequency || "once_per_day"} 
+                onChange={(e) => setConfig({ ...config, displayFrequency: e.target.value })}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: "#FFFFFF", backgroundColor: "#0F0F13" }}
+              >
+                <option value="always">Every refresh</option>
+                <option value="once_per_day">Once per 24h</option>
+                <option value="once_per_session">Once per session</option>
               </select>
             </div>
 
