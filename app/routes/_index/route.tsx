@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect, Form, useLoaderData } from "react-router";
+import { useEffect } from "react";
 
 import { login } from "../../shopify.server";
 
@@ -22,6 +23,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { showForm } = useLoaderData<typeof loader>();
+
+  useEffect(() => {
+    // If we are inside an iframe (Shopify Admin), always redirect to the dashboard
+    if (window.top !== window.self) {
+      window.location.href = `/app${window.location.search}`;
+    }
+  }, []);
 
   return (
     <div className={styles.index}>
