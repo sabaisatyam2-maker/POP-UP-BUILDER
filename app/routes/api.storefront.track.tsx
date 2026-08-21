@@ -7,8 +7,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    const data = await request.json();
-    const { shop, popupId, type } = data; // type: 'view' or 'click'
+    const payload = await request.json();
+    const { shop, popupId, type } = payload; // type: 'view' or 'click'
 
     if (!shop || !popupId || !type) {
       return data({ error: "Missing required fields" }, { status: 400 });

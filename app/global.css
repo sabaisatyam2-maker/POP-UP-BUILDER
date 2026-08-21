@@ -20,22 +20,26 @@
 }
 
 /* Dark theme for Polaris inputs */
-.Polaris-TextField__Input {
+.Polaris-TextField__Input,
+.Polaris-Select__Input {
   color: #FFFFFF !important;
   background-color: transparent !important;
 }
 .Polaris-TextField__Input::placeholder {
   color: #8B8D97 !important;
 }
-.Polaris-TextField__Backdrop {
+.Polaris-TextField__Backdrop,
+.Polaris-Select__Backdrop {
   background-color: #1A1A24 !important;
   border-color: #232331 !important;
 }
-.Polaris-TextField:focus-within .Polaris-TextField__Backdrop {
+.Polaris-TextField:focus-within .Polaris-TextField__Backdrop,
+.Polaris-Select:focus-within .Polaris-Select__Backdrop {
   border-color: #7338e5 !important;
   box-shadow: 0 0 0 1px #7338e5 !important;
 }
-.Polaris-TextField {
+.Polaris-TextField,
+.Polaris-Select {
   background-color: #1A1A24 !important;
 }
 
