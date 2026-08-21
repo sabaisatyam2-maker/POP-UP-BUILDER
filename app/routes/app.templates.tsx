@@ -400,7 +400,7 @@ export default function Templates() {
                       position: "relative"
                     }}>
                       {pConfig.layout === "split" && pConfig.imageUrl && (
-                        <div style={{ flex: 1, width: "100%", height: isMobile ? "200px" : "auto" }}>
+                        <div style={{ flex: isMobile ? "none" : 1, width: "100%", height: isMobile ? "220px" : "auto" }}>
                           <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         </div>
                       )}

@@ -224,6 +224,7 @@ export default function Builder() {
           
           {/* Popup Canvas */}
           <div 
+            className={config.layout === "split" ? "pb-layout-split" : ""}
             style={{
               position: "relative",
               zIndex: 10,
@@ -233,6 +234,7 @@ export default function Builder() {
               padding: config.styles?.padding || "24px",
               boxShadow: config.styles?.boxShadow || "0 4px 12px rgba(0,0,0,0.15)",
               width: config.layout === "split" ? "600px" : "400px",
+              maxWidth: "100%",
               minHeight: "360px",
               display: "flex",
               flexDirection: config.layout === "split" ? "row" : "column",
@@ -265,7 +267,7 @@ export default function Builder() {
             >
               &times;
             </button>
-            {config.layout === "image-bottom-right" && (
+            {config.layout === "split" || config.layout === "image-bottom-right" ? (
               <style>{`
                 @media (max-width: 480px) {
                   .pb-mobile-img {
@@ -281,11 +283,19 @@ export default function Builder() {
                     padding: 8px 16px !important;
                     font-size: 14px !important;
                   }
+                  .pb-layout-split {
+                    flex-direction: column !important;
+                  }
+                  .pb-layout-split .pb-img-container {
+                    height: 220px !important;
+                    width: 100% !important;
+                    flex: none !important;
+                  }
                 }
               `}</style>
-            )}  {/* Layout Rendering */}
+            ) : null}  {/* Layout Rendering */}
             {config.layout === "split" && config.imageUrl && (
-              <div style={{ flex: 1, backgroundColor: "#f4f6f8" }}>
+              <div className="pb-img-container" style={{ flex: 1, backgroundColor: "#f4f6f8" }}>
                 <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
             )}

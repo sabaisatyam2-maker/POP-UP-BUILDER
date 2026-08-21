@@ -111,4 +111,13 @@
     padding: 8px 16px !important;
     font-size: 14px !important;
   }
+  .pb-layout-split {
+    flex-direction: column !important;
+  }
+  .pb-layout-split .pb-img-container {
+    height: 220px !important;
+    width: 100% !important;
+    flex: none !important;
+  }
 }
+

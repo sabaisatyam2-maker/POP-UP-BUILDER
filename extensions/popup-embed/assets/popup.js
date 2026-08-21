@@ -77,8 +77,12 @@
     // Track View
     trackAnalytics(popup.id, 'view');
 
+    const isMobile = window.innerWidth <= 480;
     const canvas = document.createElement('div');
     canvas.className = 'pb-canvas';
+    if (pConfig.layout === 'split') {
+      canvas.classList.add('pb-layout-split');
+    }
     
     // Apply Styles
     const styles = pConfig.styles || {};
@@ -114,6 +118,7 @@
     // Render Image for Split Layout
     if (pConfig.layout === 'split' && pConfig.imageUrl) {
       const imgContainer = document.createElement('div');
+      imgContainer.className = 'pb-img-container';
       imgContainer.style.flex = '1';
       imgContainer.style.backgroundColor = '#f4f6f8';
       imgContainer.style.display = 'flex';
