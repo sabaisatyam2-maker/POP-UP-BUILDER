@@ -26,8 +26,7 @@ export default function App() {
           <img src="/logo.png" alt="Popup Builder Logo" className={styles.mainLogo} />
         </div>
 
-        <div className={styles.badge}>Boost Sales. Capture Leads.</div>
-        
+
         <h1 className={styles.heading}>
           Engage Visitors.<br/>
           Boost <span className={styles.headingHighlight}>Sales.</span>
