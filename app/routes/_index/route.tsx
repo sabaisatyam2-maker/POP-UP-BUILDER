@@ -8,7 +8,12 @@ import styles from "./styles.module.css";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
 
-  if (url.searchParams.get("shop")) {
+  if (
+    url.searchParams.get("shop") || 
+    url.searchParams.get("host") || 
+    url.searchParams.get("id_token") || 
+    url.searchParams.get("embedded") === "1"
+  ) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
