@@ -239,7 +239,9 @@ export default function Builder() {
               display: "flex",
               flexDirection: config.layout === "split" ? "row" : "column",
               alignItems: config.layout === "background" ? "center" : "stretch",
-              overflow: "hidden"
+              overflow: "hidden",
+              height: "fit-content",
+              maxHeight: "90%"
             }}
           >
             {/* NON-NEGOTIABLE CLOSE BUTTON RULE */}
@@ -303,7 +305,7 @@ export default function Builder() {
               <img src={config.imageUrl} className="pb-mobile-img" alt="Popup Image" style={popup.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: "-5px", width: "65%", maxWidth: "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: "40px", right: "0px", width: "55%", maxWidth: "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
             )}
 
-            <div style={{ flex: 1, width: config.layout === "background" ? "100%" : "auto", padding: config.layout === "split" ? "32px" : config.layout === "image-bottom-right" ? "24px 24px 24px 0px" : "24px", textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+            <div style={{ width: config.layout === "background" ? "100%" : "auto", padding: config.layout === "split" ? "32px" : config.layout === "image-bottom-right" ? "24px 24px 24px 0px" : "24px", textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
               {config.layout !== "split" && config.layout !== "image-bottom-right" && config.layout !== "background" && config.imageUrl && (
                 <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
               )}

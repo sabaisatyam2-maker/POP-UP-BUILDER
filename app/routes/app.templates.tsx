@@ -397,7 +397,10 @@ export default function Templates() {
                       flexDirection: pConfig.layout === "split" ? (isMobile ? "column" : "row") : "column",
                       alignItems: pConfig.layout === "background" ? "flex-end" : "stretch",
                       overflow: "hidden",
-                      position: "relative"
+                      position: "relative",
+                      height: "fit-content",
+                      maxHeight: "90%",
+                      padding: previewTemplate.name.includes("CYBER MONDAY") ? (isMobile ? "16px" : "24px") : (pConfig.styles?.padding || undefined)
                     }}>
                       {pConfig.layout === "split" && pConfig.imageUrl && (
                         <div style={{ flex: isMobile ? "none" : 1, width: "100%", height: isMobile ? "220px" : "auto" }}>
@@ -407,11 +410,11 @@ export default function Templates() {
                       {pConfig.layout === "image-bottom-right" && pConfig.imageUrl && (
                         <img src={pConfig.imageUrl} alt="Popup Image" style={previewTemplate.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: isMobile ? "0px" : "-5px", width: isMobile ? "65%" : "65%", maxWidth: isMobile ? "180px" : "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: isMobile ? "40px" : "40px", right: isMobile ? "0px" : "0px", width: isMobile ? "55%" : "55%", maxWidth: isMobile ? "180px" : "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
                       )}
-                      <div style={{ flex: 1, width: pConfig.layout === "background" ? "100%" : "auto", height: "100%", padding: pConfig.layout === "split" ? (isMobile ? "16px" : "24px") : pConfig.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px"), textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: pConfig.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+                      <div style={{ width: pConfig.layout === "background" ? "100%" : "auto", padding: previewTemplate.name.includes("CYBER MONDAY") ? "12px" : (pConfig.layout === "split" ? (isMobile ? "16px" : "24px") : pConfig.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px")), textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: previewTemplate.name.includes("CYBER MONDAY") ? "8px" : "16px", justifyContent: "center", alignItems: pConfig.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
                         {pConfig.layout !== "split" && pConfig.layout !== "image-bottom-right" && pConfig.layout !== "background" && pConfig.imageUrl && (
-                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
+                          <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: previewTemplate.name.includes("CYBER MONDAY") ? "8px" : "16px" }} />
                         )}
-                        <div style={{ margin: 0, fontSize: isMobile ? "20px" : "24px", fontWeight: "bold", lineHeight: "1.3", wordBreak: "break-word", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? (pConfig.colors.text || "#000000") : (pConfig.colors.headlineText || pConfig.colors.text), position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>
+                        <div style={{ margin: 0, fontSize: previewTemplate.name.includes("CYBER MONDAY") ? (isMobile ? "20px" : "24px") : (isMobile ? "20px" : "24px"), fontWeight: "bold", lineHeight: "1.3", wordBreak: "break-word", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? (pConfig.colors.text || "#000000") : (pConfig.colors.headlineText || pConfig.colors.text), position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>
                           {(pConfig.content.headline || "").split('\n').map((line, i) => (
                             <span key={i}>
                               {line}
@@ -420,12 +423,10 @@ export default function Templates() {
                           ))}
                         </div>
                         {pConfig.content.subheadline && (
-                          <div style={{ margin: "0 0 8px 0", fontSize: isMobile ? "16px" : "20px", fontWeight: "bold", lineHeight: "1.2", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? (pConfig.colors.text || "#000000") : pConfig.colors.primary, position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>{pConfig.content.subheadline}</div>
+                          <div style={{ margin: previewTemplate.name.includes("CYBER MONDAY") ? "0 0 4px 0" : "0 0 8px 0", fontSize: previewTemplate.name.includes("CYBER MONDAY") ? (isMobile ? "16px" : "18px") : (isMobile ? "16px" : "20px"), fontWeight: "bold", lineHeight: "1.2", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? (pConfig.colors.text || "#000000") : pConfig.colors.primary, position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>{pConfig.content.subheadline}</div>
                         )}
-                        <p style={{ margin: 0, fontSize: isMobile ? "14px" : "16px", lineHeight: "1.5", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(pConfig.colors.background || "#050505") : pConfig.colors.text, maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.description}</p>
-                        
                         {pConfig.hasCountdown && (
-                          <div style={{ display: "flex", justifyContent: "center", gap: "12px", margin: "8px 0 16px 0" }}>
+                          <div style={{ display: "flex", justifyContent: "center", gap: previewTemplate.name.includes("CYBER MONDAY") ? "8px" : "12px", margin: previewTemplate.name.includes("CYBER MONDAY") ? "4px 0 8px 0" : "8px 0 16px 0", transform: previewTemplate.name.includes("CYBER MONDAY") ? "scale(0.85)" : "none" }}>
                             {[{ l: "Days", v: "02" }, { l: "Hours", v: "14" }, { l: "Mins", v: "36" }, { l: "Secs", v: "52" }].map((u, i) => (
                               <div key={i} style={{ backgroundColor: "#1a1a1f", borderRadius: "8px", padding: "12px 16px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.05)", minWidth: "48px" }}>
                                 <span style={{ fontSize: "20px", fontWeight: "bold", color: "#ffffff", lineHeight: "1" }}>{u.v}</span>
@@ -434,6 +435,8 @@ export default function Templates() {
                             ))}
                           </div>
                         )}
+                        <p style={{ margin: 0, fontSize: previewTemplate.name.includes("CYBER MONDAY") ? (isMobile ? "12px" : "14px") : (isMobile ? "14px" : "16px"), lineHeight: "1.5", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(pConfig.colors.background || "#050505") : pConfig.colors.text, maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.description}</p>
+
                         
                         {pConfig.hasEmailInput && (
                           <input 

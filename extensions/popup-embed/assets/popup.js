@@ -206,7 +206,7 @@
       h2.className = 'pb-headline pb-mobile-text';
       h2.innerText = content.headline;
       h2.style.color = /new year sale/i.test(popupName) ? popupTextColor : (colors.headlineText || popupTextColor);
-      h2.style.fontSize = '24px';
+      h2.style.fontSize = '32px';
       h2.style.margin = '0';
       h2.style.lineHeight = '1.3';
       h2.style.wordBreak = 'break-word';
@@ -222,7 +222,7 @@
       h3.className = 'pb-subheadline pb-mobile-text';
       h3.innerText = content.subheadline;
       h3.style.color = /new year sale/i.test(popupName) ? popupTextColor : (colors.primary || '#000000');
-      h3.style.fontSize = '20px';
+      h3.style.fontSize = '24px';
       h3.style.fontWeight = 'bold';
       h3.style.margin = '0 0 8px 0';
       h3.style.wordBreak = 'break-word';
@@ -231,20 +231,6 @@
         h3.style.maxWidth = '55%';
       }
       innerContainer.appendChild(h3);
-    }
-
-    if (content.description) {
-      const p = document.createElement('p');
-      p.className = 'pb-description pb-mobile-text';
-      p.innerText = content.description;
-      p.style.color = /new year sale/i.test(popupName) ? getContrastColor(colors.background || '#050505') : popupTextColor;
-      p.style.margin = '0';
-      p.style.wordBreak = 'break-word';
-      if (pConfig.layout === 'image-bottom-right') {
-        p.style.maxWidth = '55%';
-      }
-      p.style.textAlign = pConfig.layout === 'image-bottom-right' ? 'left' : 'center';
-      innerContainer.appendChild(p);
     }
 
     if (pConfig.hasCountdown) {
@@ -324,6 +310,21 @@
       const timerInterval = setInterval(updateTimer, 1000);
       container.setAttribute('data-timer-interval', timerInterval);
     }
+
+    if (content.description) {
+      const p = document.createElement('p');
+      p.className = 'pb-description pb-mobile-text';
+      p.innerText = content.description;
+      p.style.color = /new year sale/i.test(popupName) ? getContrastColor(colors.background || '#050505') : popupTextColor;
+      p.style.margin = '0';
+      p.style.wordBreak = 'break-word';
+      if (pConfig.layout === 'image-bottom-right') {
+        p.style.maxWidth = '55%';
+      }
+      p.style.textAlign = pConfig.layout === 'image-bottom-right' ? 'left' : 'center';
+      innerContainer.appendChild(p);
+    }
+
     if (pConfig.hasEmailInput) {
       const emailInput = document.createElement('input');
       emailInput.type = 'email';

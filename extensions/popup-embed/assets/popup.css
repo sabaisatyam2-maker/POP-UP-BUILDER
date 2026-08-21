@@ -64,7 +64,7 @@
 
 .pb-headline {
   margin: 0 0 16px 0;
-  font-size: 24px;
+  font-size: 32px;
   line-height: 1.2;
 }
 
@@ -90,10 +90,10 @@
     padding: 16px !important;
   }
   .pb-headline {
-    font-size: 20px !important;
+    font-size: 24px !important;
   }
   .pb-subheadline {
-    font-size: 16px !important;
+    font-size: 20px !important;
   }
   .pb-description {
     font-size: 14px !important;
