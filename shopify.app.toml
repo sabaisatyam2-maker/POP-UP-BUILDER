@@ -2,7 +2,7 @@
 
 client_id = "ada962613fe24090b2c6a9a36963e797"
 name = "Popup Builder"
-application_url = "https://pop-up-builder-five.vercel.app"
+application_url = "https://pop-up-builder-five.vercel.app/app"
 embedded = true
 
 [access_scopes]
