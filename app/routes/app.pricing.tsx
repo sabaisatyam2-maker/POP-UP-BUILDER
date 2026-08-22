@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, type ActionFunctionArgs, redirect, useLoaderData, useFetcher, useNavigate } from "react-router";
+import { type LoaderFunctionArgs, type ActionFunctionArgs, redirect, data, useLoaderData, useFetcher, useNavigate } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
@@ -70,10 +70,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   try {
     await billing.require({
-      plans: [plan],
+      plans: [plan as "GROWTH" | "PRO"],
       isTest: true,
       onFailure: async () => billing.request({
-        plan: plan,
+        plan: plan as "GROWTH" | "PRO",
         isTest: true,
         returnUrl: `https://${shop}/admin/apps/${process.env.SHOPIFY_API_KEY}/app/pricing`,
       }),
