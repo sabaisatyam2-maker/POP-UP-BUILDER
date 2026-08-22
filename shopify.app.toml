@@ -5,9 +5,42 @@ name = "Popup Builder"
 application_url = "https://pop-up-builder-five.vercel.app/app"
 embedded = true
 
+[build]
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "https://pop-up-builder-five.vercel.app/webhooks/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "https://pop-up-builder-five.vercel.app/webhooks/customers/redact"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "https://pop-up-builder-five.vercel.app/webhooks/shop/redact"
+  compliance_topics = [ "shop/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_themes,write_themes,write_products,write_metaobjects,write_metaobject_definitions"
+scopes = "read_themes,write_metaobject_definitions,write_metaobjects,write_products,write_themes"
+
+[auth]
+redirect_urls = [
+  "https://pop-up-builder-five.vercel.app/auth/callback",
+  "https://pop-up-builder-five.vercel.app/auth/shopify/callback",
+  "https://pop-up-builder-five.vercel.app/api/auth/callback"
+]
 
 [app_proxy]
 url = "https://pop-up-builder-five.vercel.app/api/storefront"
@@ -37,25 +70,3 @@ required = true
 [metaobjects.app.example.fields.description]
 name = "Description"
 type = "multi_line_text_field"
-
-[webhooks]
-api_version = "2026-10"
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/uninstalled"
-  topics = [ "app/uninstalled" ]
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/scopes_update"
-  topics = [ "app/scopes_update" ]
-
-[auth]
-redirect_urls = [ "https://pop-up-builder-five.vercel.app/auth/callback", "https://pop-up-builder-five.vercel.app/auth/shopify/callback", "https://pop-up-builder-five.vercel.app/api/auth/callback" ]
-
-[build]
-automatically_update_urls_on_dev = true
-
-[webhooks.privacy_compliance]
-customer_deletion_url = "https://pop-up-builder-five.vercel.app/webhooks/customers/redact"
-customer_data_request_url = "https://pop-up-builder-five.vercel.app/webhooks/customers/data_request"
-shop_deletion_url = "https://pop-up-builder-five.vercel.app/webhooks/shop/redact"

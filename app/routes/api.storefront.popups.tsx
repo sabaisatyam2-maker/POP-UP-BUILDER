@@ -1,4 +1,4 @@
-import { data, type LoaderFunctionArgs } from "react-router";
+import { data, type LoaderFunctionArgs, type ActionFunctionArgs } from "react-router";
 import db from "../db.server";
 import crypto from "crypto";
 
@@ -28,11 +28,32 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       headers: {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Pragma": "no-cache",
-        "Expires": "0"
+        "Expires": "0",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       }
     });
   } catch (error) {
     console.error("Error fetching popups:", error);
-    return data({ error: "Failed to fetch popups" }, { status: 500 });
+    return data({ error: "Failed to fetch popups" }, { 
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      }
+    });
   }
+};
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      }
+    });
+  }
+  return new Response("Method Not Allowed", { status: 405 });
 };

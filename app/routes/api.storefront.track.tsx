@@ -1,4 +1,4 @@
-import { data, type ActionFunctionArgs } from "react-router";
+import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import db from "../db.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -26,9 +26,33 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       });
     }
 
-    return data({ success: true });
+    return data({ success: true }, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      }
+    });
   } catch (error) {
     console.error("Error tracking popup:", error);
-    return data({ error: "Failed to track metrics" }, { status: 500 });
+    return data({ error: "Failed to track metrics" }, { 
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      }
+    });
   }
+};
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      }
+    });
+  }
+  return new Response("Method Not Allowed", { status: 405 });
 };
