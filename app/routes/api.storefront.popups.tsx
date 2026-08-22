@@ -24,7 +24,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       },
     });
 
-    return data({ popups });
+    return data({ popups }, {
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
+    });
   } catch (error) {
     console.error("Error fetching popups:", error);
     return data({ error: "Failed to fetch popups" }, { status: 500 });
