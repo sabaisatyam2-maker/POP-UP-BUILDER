@@ -1,22 +1,37 @@
-import { type LoaderFunctionArgs, type ActionFunctionArgs, data, redirect } from "react-router";
-import { useLoaderData, useFetcher, useNavigate } from "react-router";
+import { type LoaderFunctionArgs, type ActionFunctionArgs, redirect, useLoaderData, useFetcher, useNavigate } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   const shop = session.shop;
+
+  const billingCheck = await billing.check({
+    plans: ["GROWTH", "PRO"],
+    isTest: true,
+  });
+
+  let activePlan = "FREE";
+  if (billingCheck.hasActivePayment) {
+    if (billingCheck.appSubscriptions.some((sub: any) => sub.name === "PRO")) {
+      activePlan = "PRO";
+    } else if (billingCheck.appSubscriptions.some((sub: any) => sub.name === "GROWTH")) {
+      activePlan = "GROWTH";
+    }
+  }
 
   let subscription = await db.subscription.findUnique({ where: { shop } });
   if (!subscription) {
-    subscription = await db.subscription.create({ data: { shop, plan: "FREE" } });
+    subscription = await db.subscription.create({ data: { shop, plan: activePlan } });
+  } else if (subscription.plan !== activePlan) {
+    subscription = await db.subscription.update({ where: { shop }, data: { plan: activePlan } });
   }
 
   return { subscription };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   const formData = await request.formData();
   const plan = formData.get("plan");
 
@@ -24,22 +39,72 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return data({ error: "Invalid plan" }, { status: 400 });
   }
 
-  await db.subscription.update({
-    where: { shop: session.shop },
-    data: { plan },
-  });
+  const shop = session.shop;
 
-  await db.activityLog.create({
-    data: { shop: session.shop, action: "UPGRADED", description: `Changed plan to ${plan}.` },
-  });
+  if (plan === "FREE") {
+    const billingCheck = await billing.check({
+      plans: ["GROWTH", "PRO"],
+      isTest: true,
+    });
+    
+    for (const sub of billingCheck.appSubscriptions) {
+      await billing.cancel({
+        subscriptionId: sub.id,
+        isTest: true,
+        prorate: false,
+      });
+    }
 
-  return redirect("/app/dashboard");
+    await db.subscription.update({
+      where: { shop },
+      data: { plan: "FREE" },
+    });
+
+    await db.activityLog.create({
+      data: { shop, action: "DOWNGRADED", description: `Changed plan to FREE.` },
+    });
+
+    const url = new URL(request.url);
+    return redirect(`/app?${url.searchParams.toString()}`);
+  }
+
+  try {
+    await billing.require({
+      plans: [plan],
+      isTest: true,
+      onFailure: async () => billing.request({
+        plan: plan,
+        isTest: true,
+        returnUrl: `https://${shop}/admin/apps/${process.env.SHOPIFY_API_KEY}/app/pricing`,
+      }),
+    });
+  } catch (error) {
+    if (error instanceof Response) {
+      const url = error.headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url") || error.headers.get("Location");
+      if (url) {
+        return { billingUrl: url };
+      }
+    }
+    console.error("Billing Request Error:", error);
+    throw error; // Re-throw if it's not a redirect response
+  }
+
+  const url = new URL(request.url);
+  return redirect(`/app?${url.searchParams.toString()}`);
 };
+
+import { useEffect } from "react";
 
 export default function Pricing() {
   const { subscription } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (fetcher.data && (fetcher.data as any).billingUrl) {
+      window.open((fetcher.data as any).billingUrl, "_top");
+    }
+  }, [fetcher.data]);
 
   const plans = [
     {
@@ -65,7 +130,7 @@ export default function Pricing() {
   return (
     <div style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
       <button 
-        onClick={() => navigate("/app/dashboard")}
+        onClick={() => navigate("/app")}
         style={{ background: "none", border: "none", cursor: "pointer", color: "#8B8D97", marginBottom: "24px", display: "flex", alignItems: "center", gap: "8px" }}
       >
         &larr; Back to Dashboard
