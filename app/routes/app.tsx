@@ -1,3 +1,11 @@
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "ui-nav-menu": any;
+    }
+  }
+}
+
 import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { Outlet, useLoaderData, useRouteError, Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
