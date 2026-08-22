@@ -10,6 +10,10 @@
       const response = await fetch(`${config.apiUrl}/popups?shop=${config.shopDomain}`);
       const data = await response.json();
       
+      if (data.appUrl) {
+        config.appUrl = data.appUrl;
+      }
+      
       if (data.popups && data.popups.length > 0) {
         activePopups = data.popups;
       } else if (config.designMode) {
@@ -100,8 +104,9 @@
     const getImageUrl = (url) => {
       if (!url) return url;
       if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//') || url.startsWith('data:')) return url;
-      if (url.startsWith('/')) return `${config.apiUrl}${url}`;
-      return `${config.apiUrl}/${url}`;
+      const baseUrl = config.appUrl || config.apiUrl;
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      return `${baseUrl}/${url}`;
     };
 
     const imageUrl = getImageUrl(pConfig.imageUrl);

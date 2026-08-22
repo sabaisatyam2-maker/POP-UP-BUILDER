@@ -23,8 +23,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         status: "ACTIVE",
       },
     });
+    
+    // Shopify App proxy sets x-forwarded-host to the shop domain, but we want the actual app backend URL
+    // for serving static images from the /public folder.
+    const appUrl = process.env.SHOPIFY_APP_URL || `${url.protocol}//${url.host}`;
 
-    return data({ popups }, {
+    return data({ popups, appUrl }, {
       headers: {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Pragma": "no-cache",
