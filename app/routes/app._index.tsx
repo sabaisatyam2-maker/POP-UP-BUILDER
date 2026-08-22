@@ -162,8 +162,9 @@ export default function Dashboard() {
   const isPro = subscription.plan === "PRO";
 
   useEffect(() => {
-    if (fetcher.data?.error) {
-      shopify.toast.show(fetcher.data.error, { isError: true });
+    const data = fetcher.data as any;
+    if (data && data.error) {
+      (window as any).shopify.toast.show(data.error, { isError: true });
     }
   }, [fetcher.data]);
 
@@ -172,7 +173,7 @@ export default function Dashboard() {
   };
 
   return (
-    <s-page fullWidth>
+    <div style={{ padding: "40px", maxWidth: "1200px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
         <img 
           src="/logo.png" 
@@ -290,7 +291,7 @@ export default function Dashboard() {
         {/* Left Column */}
         <div className="col-main">
           {popups.length === 0 ? (
-            <s-box padding="loose">
+            <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "24px" }}>Get Started in 3 Simple Steps</h2>
               
               <div className="step-item">
@@ -318,13 +319,13 @@ export default function Dashboard() {
               </div>
               
               <div style={{ marginTop: "16px" }}>
-                <s-button variant="tertiary" onClick={() => navigate("/app/templates")}>
+                <button className="gradient-button" style={{ background: "transparent", border: "1px solid #333344" }} onClick={() => navigate("/app/templates")}>
                   Browse Templates
-                </s-button>
+                </button>
               </div>
-            </s-box>
+            </div>
           ) : (
-            <s-box padding="loose">
+            <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "24px" }}>Your Popups</h2>
               <table className="custom-table">
                 <thead>
@@ -343,68 +344,67 @@ export default function Dashboard() {
                         <strong>{popup.name}</strong>
                       </td>
                       <td>
-                        <s-text variant="subdued">{popup.status}</s-text>
+                        <span style={{ color: "#8B8D97" }}>{popup.status}</span>
                       </td>
                       <td>{popup.views}</td>
                       <td>{popup.clicks}</td>
                       <td style={{ display: "flex", gap: "8px" }}>
-                        <s-button variant="tertiary" onClick={() => navigate(`/app/builder/${popup.id}`)}>
+                        <button className="gradient-button" style={{ background: "transparent", border: "1px solid #333344", padding: "6px 12px" }} onClick={() => navigate(`/app/templates/builder/${popup.id}`)}>
                           Edit
-                        </s-button>
-                        <s-button 
-                          variant="tertiary" 
+                        </button>
+                        <button 
+                          className="gradient-button" style={{ background: "transparent", border: "1px solid #333344", padding: "6px 12px" }} 
                           onClick={() => fetcher.submit({ intent: "toggle_status", popupId: popup.id, currentStatus: popup.status }, { method: "post" })}
                         >
                           {popup.status === "ACTIVE" ? "Pause" : "Activate"}
-                        </s-button>
-                        <s-button 
-                          variant="tertiary" 
+                        </button>
+                        <button 
+                          className="gradient-button" style={{ background: "transparent", border: "1px solid #EF4444", padding: "6px 12px", color: "#EF4444" }} 
                           onClick={() => {
                             if (confirm("Are you sure you want to delete this popup?")) {
                               fetcher.submit({ intent: "delete_popup", popupId: popup.id }, { method: "post" });
                             }
                           }}
-                          style={{ color: "#EF4444" }}
                         >
                           Delete
-                        </s-button>
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </s-box>
+            </div>
           )}
         </div>
 
         {/* Right Column */}
         <div className="col-side">
-          <s-box padding="loose">
+          <div className="card" style={{ padding: "32px", marginBottom: "24px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
             <h2 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px" }}>Current Plan</h2>
             <div style={{ color: "#9D4EDD", fontWeight: "bold", fontSize: "14px", marginBottom: "8px" }}>
               {subscription.plan} PLAN
             </div>
-            <s-text variant="subdued" size="small">
+            <div style={{ color: "#8B8D97", fontSize: "12px", marginBottom: "16px" }}>
               {metrics.activePopupsCount} / {isPro ? "Unlimited" : "1"} Active Popups
-            </s-text>
+            </div>
             <div className="plan-progress-bar">
               <div className="plan-progress-fill" style={{ width: isPro ? "100%" : `${Math.min((metrics.activePopupsCount / 1) * 100, 100)}%` }}></div>
             </div>
             {!isPro && (
-              <s-button variant="tertiary" onClick={() => navigate("/app/pricing")}>
+              <button className="gradient-button" style={{ background: "transparent", border: "1px solid #333344", width: "100%", marginTop: "16px" }} onClick={() => navigate("/app/pricing")}>
                 Upgrade Plan
-              </s-button>
+              </button>
             )}
-          </s-box>
+          </div>
 
-          <s-box padding="loose">
+          <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
               <h2 style={{ fontSize: "16px", fontWeight: "600", margin: 0 }}>Recent Activity</h2>
-              <s-text variant="subdued" size="small">View All</s-text>
+              <span style={{ color: "#8B8D97", fontSize: "12px" }}>View All</span>
             </div>
             
             {activities.length === 0 ? (
-              <s-text variant="subdued">No recent activity.</s-text>
+              <div style={{ color: "#8B8D97" }}>No recent activity.</div>
             ) : (
               <div>
                 {activities.map((a) => {
@@ -432,7 +432,7 @@ export default function Dashboard() {
                 })}
               </div>
             )}
-          </s-box>
+          </div>
         </div>
       </div>
 
@@ -487,6 +487,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-    </s-page>
+    </div>
   );
 }
