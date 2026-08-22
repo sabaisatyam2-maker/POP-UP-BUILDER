@@ -127,18 +127,18 @@ s-button[variant="tertiary"]:hover {
 .dashboard-grid {
   display: flex;
   gap: 24px;
-  flex-wrap: wrap;
   margin-top: 24px;
 }
 .col-main {
   flex: 1;
-  min-width: 600px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 .col-side {
   width: 320px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -443,8 +443,11 @@ s-button[variant="tertiary"]:hover {
 
 /* Responsive Overrides */
 @media (max-width: 768px) {
-  .dashboard-grid, .template-grid {
+  .template-grid {
     grid-template-columns: 1fr !important;
+  }
+  .dashboard-grid {
+    flex-direction: column !important;
   }
   .col-main, .col-side {
     min-width: 100% !important;
