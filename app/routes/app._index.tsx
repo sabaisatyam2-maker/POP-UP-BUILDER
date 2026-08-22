@@ -45,8 +45,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     popups,
     metrics: { activePopupsCount, totalImpressions, totalClicks, ctr, totalConversions, conversionRate },
     subscription,
-    activities,
     recentTemplates,
+    shopDomain: shop,
   };
 };
 
@@ -153,7 +153,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-  const { popups, metrics, subscription, activities } = useLoaderData<typeof loader>();
+  const { popups, metrics, subscription, activities, shopDomain } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const navigate = useNavigate();
 
@@ -185,9 +185,18 @@ export default function Dashboard() {
             filter: "drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.15))" 
           }} 
         />
-        <button className="gradient-button" onClick={() => setIsCreateModalOpen(true)}>
-          + Create Popup
-        </button>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <button 
+            className="gradient-button" 
+            style={{ background: "transparent", border: "1px solid #9D4EDD" }}
+            onClick={() => window.open(`https://${shopDomain}/admin/themes/current/editor?context=apps`, "_blank")}
+          >
+            Enable in Theme
+          </button>
+          <button className="gradient-button" onClick={() => setIsCreateModalOpen(true)}>
+            + Create Popup
+          </button>
+        </div>
       </div>
 
       <div className="card" style={{ padding: "32px", marginBottom: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
