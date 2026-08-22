@@ -23,7 +23,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // Map watchlist IDs to templates
   const savedTemplates = watchlistItems.map(w => ({
     watchlistId: w.id,
-    template: templates.find(t => t.id === w.templateId)
+    template: templates.find(t => t.id === w.templateId)!
   })).filter(item => item.template !== undefined);
 
   return { savedTemplates };
@@ -68,9 +68,10 @@ export default function Watchlist() {
   const navigate = useNavigate();
 
   return (
-    <s-page heading="Your Wishlist" fullWidth>
+    <div style={{ padding: "40px", maxWidth: "1200px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
         <div>
+          <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: "0 0 8px 0", color: "#FFFFFF" }}>Your Wishlist</h1>
           <p style={{ color: "#8B8D97", fontSize: "16px", margin: "8px 0 0 0" }}>Templates you've saved for later.</p>
         </div>
       </div>
@@ -185,6 +186,6 @@ export default function Watchlist() {
           ))}
         </div>
       )}
-    </s-page>
+    </div>
   );
 }
