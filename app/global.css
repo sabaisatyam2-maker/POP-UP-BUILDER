@@ -440,3 +440,52 @@ s-button[variant="tertiary"]:hover {
 .btn-icon:hover {
   background: rgba(255,255,255,0.05);
 }
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .dashboard-grid, .template-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .col-main, .col-side {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+  .search-bar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-bar-row > div {
+    max-width: 100% !important;
+  }
+  
+  /* Builder Layout overrides for mobile */
+  .builder-layout-wrapper {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+  }
+  
+  .builder-preview-center {
+    min-height: 60vh;
+    padding: 16px !important;
+  }
+  
+  .builder-sidebar-right {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px solid #232331;
+    flex: none !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Templates Header fix */
+  .template-header-row {
+    flex-direction: column !important;
+    gap: 16px;
+    align-items: flex-start !important;
+  }
+  
+  .template-header-row button {
+    align-self: flex-start;
+  }
+}
+

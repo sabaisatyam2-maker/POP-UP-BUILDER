@@ -213,12 +213,12 @@ export default function Builder() {
       </div>
 
       {/* 3-Column Layout */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <div className="builder-layout-wrapper" style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         
         {/* Removed Left Sidebar */}
 
         {/* CENTER: Live Preview */}
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", overflowY: "auto", position: "relative" }}>
+        <div className="builder-preview-center" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", overflowY: "auto", position: "relative" }}>
           {/* Mock Storefront Background */}
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "url('https://via.placeholder.com/1200x800?text=Your+Storefront')", backgroundSize: "cover", opacity: 0.1 }} />
           
@@ -305,7 +305,7 @@ export default function Builder() {
               <img src={config.imageUrl} className="pb-mobile-img" alt="Popup Image" style={popup.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: "-5px", width: "65%", maxWidth: "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: "40px", right: "0px", width: "55%", maxWidth: "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
             )}
 
-            <div style={{ width: config.layout === "background" ? "100%" : "auto", padding: config.layout === "split" ? "32px" : config.layout === "image-bottom-right" ? "24px 24px 24px 0px" : "24px", textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+            <div style={{ flex: config.layout === "split" ? 1 : undefined, boxSizing: "border-box", width: (config.layout === "background" || config.layout === "split") ? "100%" : "auto", padding: config.layout === "split" ? "32px" : config.layout === "image-bottom-right" ? "24px 24px 24px 0px" : "24px", textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
               {config.layout !== "split" && config.layout !== "image-bottom-right" && config.layout !== "background" && config.imageUrl && (
                 <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
               )}
@@ -377,7 +377,7 @@ export default function Builder() {
         </div>
 
         {/* RIGHT: Settings Sidebar */}
-        <div style={{ width: "320px", backgroundColor: "#1A1A24", borderLeft: "1px solid #232331", padding: "20px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "24px", color: "#FFFFFF" }}>
+        <div className="builder-sidebar-right" style={{ width: "320px", backgroundColor: "#1A1A24", borderLeft: "1px solid #232331", padding: "20px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "24px", color: "#FFFFFF" }}>
           <h2 style={{ fontSize: "18px", margin: 0 }}>Popup Settings</h2>
           
           {/* Content Section */}

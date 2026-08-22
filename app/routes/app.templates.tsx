@@ -17,15 +17,35 @@ export function getContrastColor(hex: string) {
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
+  const shop = session.shop;
+
+  const billingCheck = await billing.check({
+    plans: ["GROWTH", "PRO"],
+    isTest: true,
+  });
+
+  let activePlan = "FREE";
+  if (billingCheck.hasActivePayment) {
+    if (billingCheck.appSubscriptions.some((sub: any) => sub.name === "PRO")) {
+      activePlan = "PRO";
+    } else if (billingCheck.appSubscriptions.some((sub: any) => sub.name === "GROWTH")) {
+      activePlan = "GROWTH";
+    }
+  }
+
+  let subscription = await db.subscription.findUnique({ where: { shop } });
+  if (!subscription) {
+    subscription = await db.subscription.create({ data: { shop, plan: activePlan } });
+  } else if (subscription.plan !== activePlan) {
+    subscription = await db.subscription.update({ where: { shop }, data: { plan: activePlan } });
+  }
+
   let templates = await db.template.findMany({
     orderBy: { createdAt: "desc" },
   });
 
-  if (templates.length !== 10) {
-    console.log("Force reseeding 10 templates directly in loader...");
-    await db.template.deleteMany();
-    
+  if (templates.length === 0) {
     const seedTemplates = [
       { name: "Wait! Before you go...", description: "Grab attention with a stunning exit intent popup.", type: "POPUP", category: "Exit Intent", plan: "GROWTH", previewImage: "/3d_purple_bag.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: true, imageUrl: "/3d_purple_bag.png", colors: { background: "#f4ebff", text: "#000000", primary: "#6223e1", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 25px 50px -12px rgba(109, 40, 217, 0.25)", border: "none" }, content: { headline: "Wait! Before\nyou go...", description: "Get 15% OFF on your order.", buttonText: "Get 15% Off" } }) },
       
@@ -63,9 +83,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     where: { shop: session.shop },
     select: { templateId: true }
   })).map((w: { templateId: string }) => w.templateId);
-  const subscription = await db.subscription.findUnique({
-    where: { shop: session.shop },
-  });
+
   const plan = subscription?.plan || "FREE";
   return { templates, watchlistedIds, plan };
 };
@@ -181,7 +199,7 @@ export default function Templates() {
   return (
     <div style={{ padding: "40px", maxWidth: "1200px", margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
+      <div className="template-header-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
         <div>
           <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: "0 0 8px 0", color: "#FFFFFF" }}>Templates</h1>
           <p style={{ color: "#8B8D97", margin: 0, fontSize: "15px" }}>Choose from our professionally designed templates and start converting visitors.</p>
