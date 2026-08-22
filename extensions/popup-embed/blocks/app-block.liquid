@@ -1,0 +1,18 @@
+{% schema %}
+{
+  "name": "Popup Block",
+  "target": "section",
+  "javascript": "popup.js",
+  "stylesheet": "popup.css",
+  "settings": []
+}
+{% endschema %}
+
+<script>
+  window.PopupBuilderConfig = {
+    shopDomain: "{{ shop.domain }}",
+    apiUrl: "/apps/popup-builder"
+  };
+</script>
+
+<div id="popup-builder-container"></div>
