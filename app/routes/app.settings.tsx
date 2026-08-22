@@ -30,7 +30,7 @@ export default function SettingsPage() {
   const themeEditorUrl = `https://${shop}/admin/themes/current/editor?context=apps`;
 
   return (
-    <Page title="Settings" backAction={{ content: "Dashboard", onAction: () => navigate("/app/dashboard") }}>
+    <Page title="Settings" backAction={{ content: "Dashboard", onAction: () => navigate("/app") }}>
       <Layout>
         <Layout.Section>
           <BlockStack gap="400">

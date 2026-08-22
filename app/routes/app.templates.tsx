@@ -204,7 +204,7 @@ export default function Templates() {
           <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: "0 0 8px 0", color: "#FFFFFF" }}>Templates</h1>
           <p style={{ color: "#8B8D97", margin: 0, fontSize: "15px" }}>Choose from our professionally designed templates and start converting visitors.</p>
         </div>
-        <button className="gradient-button" onClick={() => navigate("/app/dashboard")}>
+        <button className="gradient-button" onClick={() => navigate("/app")}>
           &larr; Back to Dashboard
         </button>
       </div>

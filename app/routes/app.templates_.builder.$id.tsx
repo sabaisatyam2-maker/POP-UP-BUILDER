@@ -67,7 +67,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   });
 
   if (intent === "publish") {
-    return redirect("/app/dashboard");
+    return redirect("/app");
   }
 
   return data({ success: true, popup: updatedPopup });
