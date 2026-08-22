@@ -94,8 +94,9 @@ export default function Builder() {
   const [config, setConfig] = useState(JSON.parse(popup.config));
 
   useEffect(() => {
-    if (fetcher.data?.error) {
-      shopify.toast.show(fetcher.data.error, { isError: true });
+    const data = fetcher.data as any;
+    if (data?.error) {
+      (window as any).shopify.toast.show(data.error, { isError: true });
     }
   }, [fetcher.data]);
 
@@ -109,7 +110,7 @@ export default function Builder() {
 
   const updateShadowColor = (newColor: string) => {
     const currentShadow = config.styles?.boxShadow || "0 4px 12px rgba(0,0,0,0.15)";
-    const newShadow = currentShadow.replace(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*([\d.]+)\s*)?\)/g, (match, p1) => {
+    const newShadow = currentShadow.replace(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*([\d.]+)\s*)?\)/g, (match: string, p1: string) => {
       const alpha = p1 ? parseFloat(p1) : 1;
       let r = 0, g = 0, b = 0;
       if (newColor.length === 4) {
@@ -311,7 +312,7 @@ export default function Builder() {
               )}
               
               <div className="pb-headline pb-mobile-text" style={{ fontSize: "24px", fontWeight: "bold", margin: 0, lineHeight: "1.3", color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.headlineText || config.colors?.text || "#000000"), wordBreak: "break-word", textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none" }}>
-                {(config.content?.headline || "Headline").split('\n').map((line, i) => (
+                {(config.content?.headline || "Headline").split('\n').map((line: string, i: number) => (
                   <span key={i}>
                     {line}
                     <br />

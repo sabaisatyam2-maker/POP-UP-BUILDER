@@ -1,9 +1,9 @@
 import { Box, Card, Layout, Page, Text, Button, BlockStack, InlineStack, Badge } from "@shopify/polaris";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
-export const loader = async ({ request }) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   
   const activeSubscription = await db.subscription.findFirst({

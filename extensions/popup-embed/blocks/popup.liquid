@@ -11,7 +11,8 @@
 <script>
   window.PopupBuilderConfig = {
     shopDomain: "{{ shop.domain }}",
-    apiUrl: "https://pop-up-builder-five.vercel.app/api/storefront"
+    apiUrl: "/apps/popup-builder",
+    designMode: {{ request.design_mode | default: false }}
   };
 </script>
 
