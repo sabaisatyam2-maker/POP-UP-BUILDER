@@ -45,6 +45,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     popups,
     metrics: { activePopupsCount, totalImpressions, totalClicks, ctr, totalConversions, conversionRate },
     subscription,
+    activities,
     recentTemplates,
     shopDomain: shop,
   };
@@ -416,7 +417,7 @@ export default function Dashboard() {
               <div style={{ color: "#8B8D97" }}>No recent activity.</div>
             ) : (
               <div>
-                {activities.map((a) => {
+                {activities.map((a: any) => {
                   let iconClass = "act-icon";
                   let iconChar = "•";
                   if (a.action === "CREATED" || a.action === "ACTIVATED") {
