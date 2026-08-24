@@ -181,8 +181,8 @@ export default function Builder() {
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: "#0F0F13" }}>
       
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px", backgroundColor: "#1A1A24", borderBottom: "1px solid #232331" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px", backgroundColor: "#1A1A24", borderBottom: "1px solid #232331", flexWrap: "wrap", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           <button 
             onClick={() => navigate("/app/templates")}
             style={{ padding: "8px 16px", background: "transparent", border: "1px solid #3A3A4A", borderRadius: "8px", color: "#FFFFFF", cursor: "pointer", fontWeight: "bold" }}
