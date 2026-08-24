@@ -236,7 +236,7 @@ export default function Builder() {
               boxShadow: config.styles?.boxShadow || "0 4px 12px rgba(0,0,0,0.15)",
               width: config.layout === "split" ? "600px" : "400px",
               maxWidth: "100%",
-              minHeight: "360px",
+              minHeight: config.layout === "background" ? "360px" : "auto",
               display: "flex",
               flexDirection: config.layout === "split" ? "row" : "column",
               alignItems: config.layout === "background" ? "center" : "stretch",
