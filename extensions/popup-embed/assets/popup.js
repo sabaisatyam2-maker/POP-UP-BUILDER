@@ -123,8 +123,8 @@
     canvas.style.boxSizing = "border-box";
     canvas.style.padding = (popup.name && popup.name.includes("CYBER MONDAY")) ? (isMobile ? "16px" : "24px") : (styles.padding || "24px");
     canvas.style.boxShadow = styles.boxShadow || "0 4px 12px rgba(0,0,0,0.15)";
-    canvas.style.width = pConfig.layout === "split" ? (isMobile ? "90%" : "600px") : (pConfig.layout === "background" ? (isMobile ? "90%" : "400px") : "90%");
-    canvas.style.maxWidth = pConfig.layout === "split" ? (isMobile ? "400px" : "600px") : (pConfig.layout === "background" ? (isMobile ? "400px" : "400px") : "400px");
+    canvas.style.width = "90%";
+    canvas.style.maxWidth = pConfig.layout === "split" ? "600px" : "400px";
     canvas.style.minHeight = pConfig.layout === "background" ? (isMobile ? "auto" : "360px") : "auto";
     canvas.style.display = "flex";
     canvas.style.flexDirection = pConfig.layout === "split" ? (isMobile ? "column" : "row") : "column";
@@ -148,18 +148,18 @@
       imgContainer.className = "pb-img-container";
       imgContainer.style.flex = isMobile ? "none" : "1";
       imgContainer.style.width = isMobile ? "100%" : "auto";
-      imgContainer.style.height = isMobile ? "250px" : "auto";
-      imgContainer.style.backgroundColor = "transparent";
+      imgContainer.style.height = isMobile ? "220px" : "auto";
+      imgContainer.style.backgroundColor = "#f4f6f8";
       imgContainer.style.display = "flex";
       imgContainer.style.alignItems = "center";
       imgContainer.style.justifyContent = "center";
       imgContainer.style.overflow = "hidden";
-      imgContainer.style.paddingTop = isMobile ? "24px" : "0px";
+      
       const img = document.createElement("img");
       img.src = imageUrl;
       img.style.width = "100%";
       img.style.height = "100%";
-      img.style.objectFit = isMobile ? "contain" : "cover";
+      img.style.objectFit = "cover";
       imgContainer.appendChild(img);
       canvas.appendChild(imgContainer);
     }

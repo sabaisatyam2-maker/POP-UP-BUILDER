@@ -241,8 +241,8 @@ export default function Builder() {
               height: "fit-content",
               minHeight: "400px",
               padding: "40px 0",
-              backgroundColor: "#f4f6f8",
-              border: "8px solid #c9cccf",
+              backgroundColor: "transparent",
+              border: "none",
               borderRadius: "24px",
               position: "relative",
               overflow: "hidden",
@@ -252,8 +252,6 @@ export default function Builder() {
               transformOrigin: "top center",
               margin: "auto 0"
             }}>
-              {/* Fake Storefront Background inside Simulator */}
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "url('https://via.placeholder.com/1000x1000?text=Storefront+Background')", backgroundSize: "cover", filter: "blur(4px)" }} />
               
               {/* Fake Overlay */}
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1 }} />
@@ -265,8 +263,8 @@ export default function Builder() {
                   ...config.styles,
                   background: config.layout === "background" && config.imageUrl ? `${config.colors?.background || 'transparent'} url('${config.imageUrl}') center/100% 100% no-repeat` : config.colors?.background || "#ffffff",
                   color: config.colors?.text || "#000000",
-                  width: config.layout === "split" ? (isMobile ? "90%" : "600px") : (config.layout === "background" ? (isMobile ? "90%" : "400px") : "90%"),
-                  maxWidth: config.layout === "split" ? (isMobile ? "400px" : "600px") : (config.layout === "background" ? (isMobile ? "400px" : "400px") : "400px"),
+                  width: "90%",
+                  maxWidth: config.layout === "split" ? "600px" : "400px",
                   minHeight: config.layout === "background" ? (isMobile ? "auto" : "360px") : "auto",
                   display: "flex",
                   flexDirection: config.layout === "split" ? (isMobile ? "column" : "row") : "column",
@@ -307,8 +305,8 @@ export default function Builder() {
                 </button>
                 
                 {config.layout === "split" && config.imageUrl && (
-                  <div style={{ flex: isMobile ? "none" : 1, width: isMobile ? "100%" : "auto", height: isMobile ? "250px" : "auto", backgroundColor: "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", paddingTop: isMobile ? "24px" : "0px" }}>
-                    <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: isMobile ? "contain" : "cover" }} />
+                  <div style={{ flex: isMobile ? "none" : 1, width: isMobile ? "100%" : "auto", height: isMobile ? "220px" : "auto", backgroundColor: "#f4f6f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                    <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                 )}
                 
