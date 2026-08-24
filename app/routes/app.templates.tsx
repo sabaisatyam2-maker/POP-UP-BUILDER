@@ -420,21 +420,22 @@ export default function Templates() {
                       display: "flex",
                       flexDirection: pConfig.layout === "split" ? (isMobile ? "column" : "row") : "column",
                       alignItems: pConfig.layout === "background" ? "flex-end" : "stretch",
-                      overflow: "hidden",
+                      overflowX: "hidden",
+                      overflowY: "auto",
                       position: "relative",
                       height: "fit-content",
                       maxHeight: "90%",
                       padding: previewTemplate.name.includes("CYBER MONDAY") ? (isMobile ? "16px" : "24px") : (pConfig.styles?.padding || undefined)
                     }}>
                       {pConfig.layout === "split" && pConfig.imageUrl && (
-                        <div style={{ flex: isMobile ? "none" : 1, width: "100%", height: isMobile ? "220px" : "auto" }}>
+                        <div style={{ flex: isMobile ? "none" : 1, width: isMobile ? "100%" : "auto", height: isMobile ? "220px" : "auto", backgroundColor: "#f4f6f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                           <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         </div>
                       )}
                       {pConfig.layout === "image-bottom-right" && pConfig.imageUrl && (
                         <img src={pConfig.imageUrl} alt="Popup Image" style={previewTemplate.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: isMobile ? "0px" : "-5px", width: isMobile ? "65%" : "65%", maxWidth: isMobile ? "180px" : "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: isMobile ? "40px" : "40px", right: isMobile ? "0px" : "0px", width: isMobile ? "55%" : "55%", maxWidth: isMobile ? "180px" : "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
                       )}
-                      <div style={{ width: pConfig.layout === "background" ? "100%" : "auto", padding: previewTemplate.name.includes("CYBER MONDAY") ? "12px" : (pConfig.layout === "split" ? (isMobile ? "16px" : "24px") : pConfig.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px")), textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: previewTemplate.name.includes("CYBER MONDAY") ? "8px" : "16px", justifyContent: "center", alignItems: pConfig.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+                      <div style={{ flex: pConfig.layout === "split" ? (isMobile ? "none" : 1) : undefined, width: pConfig.layout === "background" ? "100%" : "auto", padding: previewTemplate.name.includes("CYBER MONDAY") ? "12px" : (pConfig.layout === "split" ? (isMobile ? "16px" : "24px") : pConfig.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px")), textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: previewTemplate.name.includes("CYBER MONDAY") ? "8px" : "16px", justifyContent: "center", alignItems: pConfig.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
                         {pConfig.layout !== "split" && pConfig.layout !== "image-bottom-right" && pConfig.layout !== "background" && pConfig.imageUrl && (
                           <img src={pConfig.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: previewTemplate.name.includes("CYBER MONDAY") ? "8px" : "16px" }} />
                         )}

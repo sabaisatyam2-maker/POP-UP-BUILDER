@@ -120,15 +120,20 @@
     
     canvas.style.color = colors.text || "#000000";
     canvas.style.borderRadius = styles.borderRadius || "8px";
-    canvas.style.padding = styles.padding || "24px";
+    canvas.style.boxSizing = "border-box";
+    canvas.style.padding = (popup.name && popup.name.includes("CYBER MONDAY")) ? (isMobile ? "16px" : "24px") : (styles.padding || "24px");
     canvas.style.boxShadow = styles.boxShadow || "0 4px 12px rgba(0,0,0,0.15)";
-    canvas.style.width = pConfig.layout === "split" ? "600px" : "400px";
-    canvas.style.maxWidth = "90%";
+    canvas.style.width = pConfig.layout === "split" ? (isMobile ? "90%" : "600px") : (pConfig.layout === "background" ? (isMobile ? "90%" : "400px") : "90%");
+    canvas.style.maxWidth = pConfig.layout === "split" ? (isMobile ? "400px" : "600px") : (pConfig.layout === "background" ? (isMobile ? "400px" : "400px") : "400px");
+    canvas.style.minHeight = pConfig.layout === "background" ? (isMobile ? "auto" : "360px") : "auto";
     canvas.style.display = "flex";
-    canvas.style.flexDirection = pConfig.layout === "split" ? "row" : "column";
-    canvas.style.alignItems = pConfig.layout === "background" ? "center" : "stretch";
-    canvas.style.overflow = "hidden";
+    canvas.style.flexDirection = pConfig.layout === "split" ? (isMobile ? "column" : "row") : "column";
+    canvas.style.alignItems = pConfig.layout === "background" ? "flex-end" : "stretch";
+    canvas.style.overflowX = "hidden";
+    canvas.style.overflowY = "auto";
     canvas.style.position = "relative";
+    canvas.style.height = "fit-content";
+    canvas.style.maxHeight = "90%";
     if (styles.border) canvas.style.border = styles.border;
 
     const closeBtn = document.createElement("button");
@@ -141,23 +146,26 @@
     if (pConfig.layout === "split" && imageUrl) {
       const imgContainer = document.createElement("div");
       imgContainer.className = "pb-img-container";
-      imgContainer.style.flex = "1";
-      imgContainer.style.backgroundColor = "#f4f6f8";
+      imgContainer.style.flex = isMobile ? "none" : "1";
+      imgContainer.style.width = isMobile ? "100%" : "auto";
+      imgContainer.style.height = isMobile ? "250px" : "auto";
+      imgContainer.style.backgroundColor = "transparent";
       imgContainer.style.display = "flex";
       imgContainer.style.alignItems = "center";
       imgContainer.style.justifyContent = "center";
       imgContainer.style.overflow = "hidden";
+      imgContainer.style.paddingTop = isMobile ? "24px" : "0px";
       const img = document.createElement("img");
       img.src = imageUrl;
       img.style.width = "100%";
       img.style.height = "100%";
-      img.style.objectFit = "cover";
+      img.style.objectFit = isMobile ? "contain" : "cover";
       imgContainer.appendChild(img);
       canvas.appendChild(imgContainer);
     }
 
     const contentDiv = document.createElement("div");
-    contentDiv.style.flex = "1";
+    contentDiv.style.flex = pConfig.layout === "split" ? (isMobile ? "none" : "1") : "";
     contentDiv.style.width = pConfig.layout === "background" ? "100%" : "auto";
     contentDiv.style.padding = pConfig.layout === "split" ? (isMobile ? "16px" : "24px") : (pConfig.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px"));
     contentDiv.style.textAlign = pConfig.layout === "image-bottom-right" ? "left" : "center";
@@ -317,8 +325,8 @@
       el.style.padding = "12px 24px";
       el.style.borderRadius = "4px";
       el.style.fontWeight = "bold";
-      el.style.whiteSpace = "nowrap";
-      el.style.wordBreak = "break-word";
+      el.style.whiteSpace = "normal";
+      el.style.wordWrap = "break-word";
       el.style.alignSelf = pConfig.layout === "image-bottom-right" ? "flex-start" : "center";
       if (pConfig.layout === "modal" || pConfig.layout === "split") el.style.width = "100%";
       if (pConfig.layout === "image-bottom-right") el.style.maxWidth = "55%";

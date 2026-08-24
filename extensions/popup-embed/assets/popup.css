@@ -85,10 +85,6 @@
 }
 
 @media (max-width: 480px) {
-  .pb-canvas {
-    width: 90% !important;
-    padding: 16px !important;
-  }
   .pb-headline {
     font-size: 24px !important;
   }

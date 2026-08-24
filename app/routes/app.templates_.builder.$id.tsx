@@ -92,6 +92,8 @@ export default function Builder() {
 
   const [name, setName] = useState(popup.name);
   const [config, setConfig] = useState(JSON.parse(popup.config));
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const isMobile = previewDevice === "mobile";
 
   useEffect(() => {
     const data = fetcher.data as any;
@@ -219,160 +221,171 @@ export default function Builder() {
         {/* Removed Left Sidebar */}
 
         {/* CENTER: Live Preview */}
-        <div className="builder-preview-center" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", overflowY: "auto", position: "relative" }}>
-          {/* Mock Storefront Background */}
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "url('https://via.placeholder.com/1200x800?text=Your+Storefront')", backgroundSize: "cover", opacity: 0.1 }} />
+        <div className="builder-preview-center" style={{ flex: 1, display: "flex", flexDirection: "column", backgroundColor: "#0F0F13", overflow: "hidden", position: "relative" }}>
           
-          {/* Popup Canvas */}
-          <div 
-            className={config.layout === "split" ? "pb-layout-split" : ""}
-            style={{
-              position: "relative",
-              zIndex: 10,
-              background: config.layout === "background" && config.imageUrl ? `${config.colors?.background || '#000'} url(${config.imageUrl}) center/100% 100% no-repeat` : (config.colors?.background || "#ffffff"),
-              color: config.colors?.text || "#000000",
-              borderRadius: config.styles?.borderRadius || "8px",
-              padding: config.styles?.padding || "24px",
-              boxShadow: config.styles?.boxShadow || "0 4px 12px rgba(0,0,0,0.15)",
-              width: config.layout === "split" ? "600px" : "400px",
-              maxWidth: "100%",
-              minHeight: config.layout === "background" ? "360px" : "auto",
-              display: "flex",
-              flexDirection: config.layout === "split" ? "row" : "column",
-              alignItems: config.layout === "background" ? "center" : "stretch",
-              overflow: "hidden",
+          {/* Device Toggles */}
+          <div style={{ width: "100%", padding: "12px", display: "flex", justifyContent: "center", gap: "12px", backgroundColor: "#111116", borderBottom: "1px solid #232331", zIndex: 20 }}>
+            <button className={previewDevice === "desktop" ? "gradient-button" : "btn-outline"} onClick={() => setPreviewDevice("desktop")} style={previewDevice !== "desktop" ? { padding: "8px 16px", background: "transparent", border: "1px solid #3A3A4A", borderRadius: "8px", color: "#FFFFFF", cursor: "pointer", fontWeight: "bold" } : { padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}>Desktop</button>
+            <button className={previewDevice === "tablet" ? "gradient-button" : "btn-outline"} onClick={() => setPreviewDevice("tablet")} style={previewDevice !== "tablet" ? { padding: "8px 16px", background: "transparent", border: "1px solid #3A3A4A", borderRadius: "8px", color: "#FFFFFF", cursor: "pointer", fontWeight: "bold" } : { padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}>Tablet</button>
+            <button className={previewDevice === "mobile" ? "gradient-button" : "btn-outline"} onClick={() => setPreviewDevice("mobile")} style={previewDevice !== "mobile" ? { padding: "8px 16px", background: "transparent", border: "1px solid #3A3A4A", borderRadius: "8px", color: "#FFFFFF", cursor: "pointer", fontWeight: "bold" } : { padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}>Mobile</button>
+          </div>
+
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "24px", overflowY: "auto", overflowX: "hidden", position: "relative", width: "100%" }}>
+            {/* Mock Storefront Background */}
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "url('https://via.placeholder.com/1200x800?text=Your+Storefront')", backgroundSize: "cover", opacity: 0.1 }} />
+            
+            {/* Simulator Container */}
+            <div style={{
+              flexShrink: 0,
+              width: previewDevice === "desktop" ? "1000px" : previewDevice === "tablet" ? "768px" : "375px",
               height: "fit-content",
-              maxHeight: "90%"
-            }}
-          >
-            {/* NON-NEGOTIABLE CLOSE BUTTON RULE */}
-            <button 
-              onClick={() => {}} 
-              style={{
-                position: "absolute",
-                top: "16px",
-                right: "16px",
-                width: "24px",
-                height: "24px",
-                background: "transparent",
-                border: "none",
-                color: config.colors?.background === "#ffffff" ? "#000000" : "#ffffff",
-                fontSize: "28px",
-                lineHeight: "1",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 99,
-                opacity: 0.7
-              }}
-              title="Close Button (Mandatory)"
-            >
-              &times;
-            </button>
-            {config.layout === "split" || config.layout === "image-bottom-right" ? (
-              <style>{`
-                @media (max-width: 480px) {
-                  .pb-mobile-img {
-                    width: 50% !important;
-                    max-width: 150px !important;
-                    bottom: 32px !important;
-                    right: 8px !important;
-                  }
-                  .pb-mobile-text {
-                    max-width: 58% !important;
-                  }
-                  .pb-mobile-btn {
-                    padding: 8px 16px !important;
-                    font-size: 14px !important;
-                  }
-                  .pb-layout-split {
-                    flex-direction: column !important;
-                  }
-                  .pb-layout-split .pb-img-container {
-                    height: 220px !important;
-                    width: 100% !important;
-                    flex: none !important;
-                  }
-                }
-              `}</style>
-            ) : null}  {/* Layout Rendering */}
-            {config.layout === "split" && config.imageUrl && (
-              <div className="pb-img-container" style={{ flex: 1, backgroundColor: "#f4f6f8" }}>
-                <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              </div>
-            )}
-            {config.layout === "image-bottom-right" && config.imageUrl && (
-              <img src={config.imageUrl} className="pb-mobile-img" alt="Popup Image" style={popup.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: "-5px", width: "65%", maxWidth: "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: "40px", right: "0px", width: "55%", maxWidth: "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
-            )}
-
-            <div style={{ flex: config.layout === "split" ? 1 : undefined, boxSizing: "border-box", width: (config.layout === "background" || config.layout === "split") ? "100%" : "auto", padding: config.layout === "split" ? "32px" : config.layout === "image-bottom-right" ? "24px 24px 24px 0px" : "24px", textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
-              {config.layout !== "split" && config.layout !== "image-bottom-right" && config.layout !== "background" && config.imageUrl && (
-                <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: "16px" }} />
-              )}
+              minHeight: "400px",
+              padding: "40px 0",
+              backgroundColor: "#f4f6f8",
+              border: "8px solid #c9cccf",
+              borderRadius: "24px",
+              position: "relative",
+              overflow: "hidden",
+              transition: "width 0.3s ease",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transform: previewDevice === "tablet" || previewDevice === "desktop" ? "scale(0.85)" : "scale(0.95)",
+              transformOrigin: "top center",
+              margin: "auto 0"
+            }}>
+              {/* Fake Storefront Background inside Simulator */}
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "url('https://via.placeholder.com/1000x1000?text=Storefront+Background')", backgroundSize: "cover", filter: "blur(4px)" }} />
               
-              <div className="pb-headline pb-mobile-text" style={{ fontSize: "24px", fontWeight: "bold", margin: 0, lineHeight: "1.3", color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.headlineText || config.colors?.text || "#000000"), wordBreak: "break-word", textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none" }}>
-                {(config.content?.headline || "Headline").split('\n').map((line: string, i: number) => (
-                  <span key={i}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
-              </div>
+              {/* Fake Overlay */}
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1 }} />
 
-              {config.content.subheadline && (
-                <div className="pb-subheadline pb-mobile-text" style={{ margin: "0 0 8px 0", fontSize: "20px", fontWeight: "bold", lineHeight: "1.2", color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.primary || "#000000"), position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none" }}>
-                  {config.content.subheadline}
-                </div>
-              )}
-              
-              {popup.name.includes("CYBER MONDAY") && (
-                <div style={{ display: "flex", justifyContent: "center", gap: "12px", margin: "8px 0" }}>
-                  {[
-                    { label: "Days", value: "02" },
-                    { label: "Hours", value: "14" },
-                    { label: "Minutes", value: "35" },
-                    { label: "Seconds", value: "59" }
-                  ].map((unit, idx) => (
-                    <div key={idx} style={{ backgroundColor: "#1a1a1f", borderRadius: "8px", padding: "12px 16px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.05)", minWidth: "48px" }}>
-                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ffffff", lineHeight: "1" }}>{unit.value}</div>
-                      <div style={{ fontSize: "10px", color: "#a1a1aa", marginTop: "4px", textTransform: "uppercase" }}>{unit.label}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <p className="pb-description pb-mobile-text" style={{ margin: 0, color: (/new year sale/i.test(popup.name || '') || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(config.colors?.background || "#050505") : (config.colors?.text || "#000000"), wordBreak: "break-word", maxWidth: config.layout === "image-bottom-right" ? "55%" : "none", position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}>
-                {config.content?.description || "Description text goes here."}
-              </p>
-
-              {config.hasEmailInput && (
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  style={{ padding: "10px", width: config.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none", textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}
-                  readOnly
-                />
-              )}
-
-              <button 
-                className="pb-cta pb-mobile-btn"
+              {/* Popup Canvas */}
+              <div 
                 style={{
-                  padding: "12px 24px",
-                  backgroundColor: config.colors?.primary || "#000000",
-                  color: config.colors?.buttonText || getContrastColor(config.colors?.primary || "#000000"),
-                  border: "none",
-                  borderRadius: "4px",
-                  fontWeight: "bold",
-                  wordBreak: "break-word",
-                  whiteSpace: "nowrap",
-                  alignSelf: config.layout === "image-bottom-right" ? "flex-start" : "center",
-                  width: (config.layout === "modal" || config.layout === "split") ? "100%" : "max-content",
-                  maxWidth: config.layout === "image-bottom-right" ? "55%" : "none"
+                  ...config.colors,
+                  ...config.styles,
+                  background: config.layout === "background" && config.imageUrl ? `${config.colors?.background || 'transparent'} url('${config.imageUrl}') center/100% 100% no-repeat` : config.colors?.background || "#ffffff",
+                  color: config.colors?.text || "#000000",
+                  width: config.layout === "split" ? (isMobile ? "90%" : "600px") : (config.layout === "background" ? (isMobile ? "90%" : "400px") : "90%"),
+                  maxWidth: config.layout === "split" ? (isMobile ? "400px" : "600px") : (config.layout === "background" ? (isMobile ? "400px" : "400px") : "400px"),
+                  minHeight: config.layout === "background" ? (isMobile ? "auto" : "360px") : "auto",
+                  display: "flex",
+                  flexDirection: config.layout === "split" ? (isMobile ? "column" : "row") : "column",
+                  alignItems: config.layout === "background" ? "flex-end" : "stretch",
+                  overflowX: "hidden",
+                  overflowY: "hidden",
+                  position: "relative",
+                  height: "fit-content",
+                  boxSizing: "border-box",
+                  padding: popup.name.includes("CYBER MONDAY") ? (isMobile ? "16px" : "24px") : (config.styles?.padding || undefined),
+                  zIndex: 10
                 }}
               >
-                {config.content?.buttonText || "Submit"}
-              </button>
+                {/* NON-NEGOTIABLE CLOSE BUTTON RULE */}
+                <button 
+                  onClick={() => {}} 
+                  style={{
+                    position: "absolute",
+                    top: "16px",
+                    right: "16px",
+                    width: "24px",
+                    height: "24px",
+                    background: "transparent",
+                    border: "none",
+                    color: config.colors?.background === "#ffffff" ? "#000000" : "#ffffff",
+                    fontSize: "28px",
+                    lineHeight: "1",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 99,
+                    opacity: 0.7
+                  }}
+                  title="Close Button (Mandatory)"
+                >
+                  &times;
+                </button>
+                
+                {config.layout === "split" && config.imageUrl && (
+                  <div style={{ flex: isMobile ? "none" : 1, width: isMobile ? "100%" : "auto", height: isMobile ? "250px" : "auto", backgroundColor: "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", paddingTop: isMobile ? "24px" : "0px" }}>
+                    <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", height: "100%", objectFit: isMobile ? "contain" : "cover" }} />
+                  </div>
+                )}
+                
+                {config.layout === "image-bottom-right" && config.imageUrl && (
+                  <img src={config.imageUrl} alt="Popup Image" style={popup.name === "Clover Offer" ? { position: "absolute", top: "0px", bottom: "0px", right: isMobile ? "0px" : "-5px", width: isMobile ? "65%" : "65%", maxWidth: isMobile ? "180px" : "300px", height: "100%", objectFit: "cover", objectPosition: "right center", zIndex: 1 } : { position: "absolute", bottom: isMobile ? "40px" : "40px", right: isMobile ? "0px" : "0px", width: isMobile ? "55%" : "55%", maxWidth: isMobile ? "180px" : "240px", height: "auto", objectFit: "contain", zIndex: 1 }} />
+                )}
+
+                <div style={{ flex: config.layout === "split" ? (isMobile ? "none" : 1) : undefined, width: config.layout === "background" ? "100%" : "auto", padding: popup.name.includes("CYBER MONDAY") ? "12px" : (config.layout === "split" ? (isMobile ? "16px" : "24px") : config.layout === "image-bottom-right" ? (isMobile ? "16px 16px 16px 0px" : "24px 24px 24px 0px") : (isMobile ? "16px" : "32px")), textAlign: config.layout === "image-bottom-right" ? "left" : "center", display: "flex", flexDirection: "column", gap: popup.name.includes("CYBER MONDAY") ? "8px" : "16px", justifyContent: "center", alignItems: config.layout === "image-bottom-right" ? "flex-start" : "center", position: "relative", zIndex: 2 }}>
+                  {config.layout !== "split" && config.layout !== "image-bottom-right" && config.layout !== "background" && config.imageUrl && (
+                    <img src={config.imageUrl} alt="Popup Image" style={{ width: "100%", maxHeight: "150px", objectFit: "contain", marginBottom: popup.name.includes("CYBER MONDAY") ? "8px" : "16px" }} />
+                  )}
+                  
+                  <div style={{ margin: 0, fontSize: popup.name.includes("CYBER MONDAY") ? (isMobile ? "20px" : "24px") : (isMobile ? "20px" : "24px"), fontWeight: "bold", lineHeight: "1.3", wordBreak: "break-word", color: (/new year sale/i.test(popup.name) || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.headlineText || config.colors?.text || "#000000"), position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>
+                    {(config.content?.headline || "Headline").split('\n').map((line: string, i: number) => (
+                      <span key={i}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                  </div>
+
+                  {config.content?.subheadline && (
+                    <div style={{ margin: popup.name.includes("CYBER MONDAY") ? "0 0 4px 0" : "0 0 8px 0", fontSize: popup.name.includes("CYBER MONDAY") ? (isMobile ? "16px" : "18px") : (isMobile ? "16px" : "20px"), fontWeight: "bold", lineHeight: "1.2", color: (/new year sale/i.test(popup.name) || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? (config.colors?.text || "#000000") : (config.colors?.primary || "#000000"), position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center", maxWidth: config.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none" }}>
+                      {config.content.subheadline}
+                    </div>
+                  )}
+                  
+                  {popup.name.includes("CYBER MONDAY") && (
+                    <div style={{ display: "flex", justifyContent: "center", gap: popup.name.includes("CYBER MONDAY") ? "8px" : "12px", margin: popup.name.includes("CYBER MONDAY") ? "4px 0 8px 0" : "8px 0 16px 0", transform: popup.name.includes("CYBER MONDAY") ? "scale(0.85)" : "none" }}>
+                      {[
+                        { label: "Days", value: "02" },
+                        { label: "Hours", value: "14" },
+                        { label: "Mins", value: "35" },
+                        { label: "Secs", value: "59" }
+                      ].map((unit, idx) => (
+                        <div key={idx} style={{ backgroundColor: "#1a1a1f", borderRadius: "8px", padding: "12px 16px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.05)", minWidth: "48px" }}>
+                          <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ffffff", lineHeight: "1" }}>{unit.value}</div>
+                          <div style={{ fontSize: "10px", color: "#a1a1aa", marginTop: "4px", textTransform: "uppercase" }}>{unit.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <p style={{ margin: 0, fontSize: popup.name.includes("CYBER MONDAY") ? (isMobile ? "12px" : "14px") : (isMobile ? "14px" : "16px"), lineHeight: "1.5", color: (/new year sale/i.test(popup.name) || (config.imageUrl && config.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(config.colors?.background || "#050505") : (config.colors?.text || "#000000"), wordBreak: "break-word", maxWidth: config.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none", position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}>
+                    {config.content?.description || "Description text goes here."}
+                  </p>
+
+                  {config.hasEmailInput && (
+                    <input 
+                      type="email" 
+                      placeholder="Enter your email" 
+                      style={{ padding: "10px", width: config.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none", textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}
+                      readOnly
+                    />
+                  )}
+
+                  <button 
+                    style={{
+                      padding: isMobile ? "8px 16px" : "12px 24px",
+                      backgroundColor: config.colors?.primary || "#000000",
+                      color: config.colors?.buttonText || getContrastColor(config.colors?.primary || "#000000"),
+                      border: "none",
+                      borderRadius: "4px",
+                      fontWeight: "bold",
+                      wordBreak: "break-word",
+                      whiteSpace: "normal",
+                      wordWrap: "break-word",
+                      alignSelf: config.layout === "image-bottom-right" ? "flex-start" : "center",
+                      width: config.layout === "image-bottom-right" || config.layout === "background" ? "max-content" : "100%",
+                      maxWidth: config.layout === "image-bottom-right" ? "55%" : "100%",
+                      position: "relative", zIndex: 2, textAlign: config.layout === "image-bottom-right" ? "left" : "center"
+                    }}
+                  >
+                    {config.content?.buttonText || "Submit"}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -439,12 +452,13 @@ export default function Builder() {
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: "4px" }}>
               <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Text</label>
-              <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.buttonText?.length || 0}/40</span>
+              <span style={{ fontSize: "12px", color: "#A0A0AB" }}>{config.content.buttonText?.length || 0}/25</span>
             </div>
             <input 
               type="text" 
               value={config.content.buttonText} 
-              maxLength={40}
+              maxLength={25}
+              className="builder-input"
               onChange={(e) => setConfig({ ...config, content: { ...config.content, buttonText: e.target.value } })}
               style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
             />
