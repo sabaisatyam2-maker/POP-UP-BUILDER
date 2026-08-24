@@ -174,8 +174,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ padding: "40px", maxWidth: "1200px", margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+    <div style={{ padding: "clamp(16px, 5vw, 40px)", maxWidth: "1200px", margin: "0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "32px" }}>
         <img 
           src="/logo.png" 
           alt="Popup Builder Logo" 
@@ -200,8 +200,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="card" style={{ padding: "32px", marginBottom: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+      <div className="card" style={{ padding: "clamp(16px, 4vw, 32px)", marginBottom: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
           <div>
             <h2 style={{ fontSize: "20px", fontWeight: "bold", margin: "0 0 4px 0", color: "#FFFFFF" }}>Active Popups</h2>
             <p style={{ color: "#8B8D97", margin: 0, fontSize: "14px" }}>Manage your currently live popups.</p>
@@ -301,7 +301,7 @@ export default function Dashboard() {
         {/* Left Column */}
         <div className="col-main">
           {popups.length === 0 ? (
-            <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
+            <div className="card" style={{ padding: "clamp(16px, 4vw, 32px)", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "24px" }}>Get Started in 3 Simple Steps</h2>
               
               <div className="step-item">
@@ -335,7 +335,7 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
+            <div className="card" style={{ padding: "clamp(16px, 4vw, 32px)", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "24px" }}>Your Popups</h2>
               <div style={{ overflowX: "auto", width: "100%" }}>
                 <table className="custom-table">
@@ -391,7 +391,7 @@ export default function Dashboard() {
 
         {/* Right Column */}
         <div className="col-side">
-          <div className="card" style={{ padding: "32px", marginBottom: "24px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
+          <div className="card" style={{ padding: "clamp(16px, 4vw, 32px)", marginBottom: "24px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
             <h2 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px" }}>Current Plan</h2>
             <div style={{ color: "#9D4EDD", fontWeight: "bold", fontSize: "14px", marginBottom: "8px" }}>
               {subscription.plan} PLAN
@@ -409,7 +409,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
+          <div className="card" style={{ padding: "clamp(16px, 4vw, 32px)", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
               <h2 style={{ fontSize: "16px", fontWeight: "600", margin: 0 }}>Recent Activity</h2>
               <span style={{ color: "#8B8D97", fontSize: "12px" }}>View All</span>
