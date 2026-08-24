@@ -221,7 +221,7 @@ export default function Dashboard() {
               </button>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))", gap: "16px" }}>
               {popups.filter(p => p.status === "ACTIVE").map(popup => (
                 <div key={popup.id} style={{ 
                   backgroundColor: "#1A1A24", 
