@@ -337,8 +337,9 @@ export default function Dashboard() {
           ) : (
             <div className="card" style={{ padding: "32px", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "24px" }}>Your Popups</h2>
-              <table className="custom-table">
-                <thead>
+              <div style={{ overflowX: "auto", width: "100%" }}>
+                <table className="custom-table">
+                  <thead>
                   <tr>
                     <th>Name</th>
                     <th>Status</th>
@@ -383,6 +384,7 @@ export default function Dashboard() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
