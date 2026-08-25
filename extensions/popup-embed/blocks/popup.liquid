@@ -4,7 +4,14 @@
   "target": "body",
   "javascript": "popup.js",
   "stylesheet": "popup.css",
-  "settings": []
+  "settings": [
+    {
+      "type": "text",
+      "id": "popup_name",
+      "label": "Specific Popup Name",
+      "info": "Optional: Enter the exact name of the popup (e.g. 'New Year Sale') to only show that popup on this theme."
+    }
+  ]
 }
 {% endschema %}
 
@@ -13,7 +20,8 @@
     shopDomain: "{{ shop.domain }}",
     apiUrl: "/apps/popup-builder",
     designMode: {{ request.design_mode | default: false }},
-    template: "{{ template.name | default: 'index' }}"
+    template: "{{ template.name | default: 'index' }}",
+    targetPopupName: "{{ block.settings.popup_name | escape | default: '' }}"
   };
 </script>
 

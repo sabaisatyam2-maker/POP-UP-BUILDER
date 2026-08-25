@@ -41,6 +41,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     take: 3,
   });
 
+  const { getEntitlements } = await import("../lib/entitlements");
+  const limits = getEntitlements(subscription.plan as any);
+
   return {
     popups,
     metrics: { activePopupsCount, totalImpressions, totalClicks, ctr, totalConversions, conversionRate },
@@ -48,6 +51,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     activities,
     recentTemplates,
     shopDomain: shop,
+    limits,
   };
 };
 
@@ -154,7 +158,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-  const { popups, metrics, subscription, activities, shopDomain } = useLoaderData<typeof loader>();
+  const { popups, metrics, subscription, activities, shopDomain, limits } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const navigate = useNavigate();
 
@@ -397,10 +401,10 @@ export default function Dashboard() {
               {subscription.plan} PLAN
             </div>
             <div style={{ color: "#8B8D97", fontSize: "12px", marginBottom: "16px" }}>
-              {metrics.activePopupsCount} / {isPro ? "Unlimited" : "1"} Active Popups
+              {metrics.activePopupsCount} / {isPro ? "Unlimited" : limits.activePopups} Active Popups
             </div>
             <div className="plan-progress-bar">
-              <div className="plan-progress-fill" style={{ width: isPro ? "100%" : `${Math.min((metrics.activePopupsCount / 1) * 100, 100)}%` }}></div>
+              <div className="plan-progress-fill" style={{ width: isPro ? "100%" : `${Math.min((metrics.activePopupsCount / limits.activePopups) * 100, 100)}%` }}></div>
             </div>
             {!isPro && (
               <button className="gradient-button" style={{ background: "transparent", border: "1px solid #333344", width: "100%", marginTop: "16px" }} onClick={() => navigate("/app/pricing")}>

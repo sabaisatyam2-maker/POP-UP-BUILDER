@@ -32,6 +32,13 @@
       }
 
       if (activePopups.length > 0) {
+        if (config.targetPopupName && config.targetPopupName.trim() !== "") {
+          const targetName = config.targetPopupName.trim().toLowerCase();
+          const targetPopup = activePopups.find(p => p.name.toLowerCase() === targetName);
+          if (targetPopup) {
+            activePopups = [targetPopup];
+          }
+        }
         activePopups.forEach(popup => {
           let pConfig;
           try {
