@@ -337,24 +337,34 @@ export default function Templates() {
               </div>
 
               <div className="template-actions">
-                {plan === "FREE" && tpl.plan !== "FREE" ? (
-                  <button 
-                    className="gradient-button" 
-                    style={{ flex: 1 }}
-                    onClick={() => navigate("/app/pricing")}
-                  >
-                    👑 Upgrade to Use
-                  </button>
-                ) : (
-                  <button 
-                    className="gradient-button" 
-                    style={{ flex: 1 }}
-                    onClick={() => fetcher.submit({ templateId: tpl.id, intent: 'use' }, { method: "post" })}
-                    disabled={fetcher.state !== "idle" && fetcher.formData?.get("templateId") === tpl.id}
-                  >
-                    Use Template
-                  </button>
-                )}
+                {(() => {
+                  const pOrder: Record<string, number> = { "FREE": 1, "GROWTH": 2, "PRO": 3 };
+                  const userWeight = pOrder[plan] || 1;
+                  const tplWeight = pOrder[tpl.plan] || 1;
+                  
+                  if (userWeight < tplWeight) {
+                    return (
+                      <button 
+                        className="gradient-button" 
+                        style={{ flex: 1 }}
+                        onClick={() => navigate("/app/pricing")}
+                      >
+                        👑 Upgrade to Use
+                      </button>
+                    );
+                  }
+                  
+                  return (
+                    <button 
+                      className="gradient-button" 
+                      style={{ flex: 1 }}
+                      onClick={() => fetcher.submit({ templateId: tpl.id, intent: 'use' }, { method: "post" })}
+                      disabled={fetcher.state !== "idle" && fetcher.formData?.get("templateId") === tpl.id}
+                    >
+                      Use Template
+                    </button>
+                  );
+                })()}
                 <button className="btn-outline" onClick={() => setPreviewTemplate(tpl)}>Preview</button>
                 <button className="btn-icon" onClick={() => fetcher.submit({ templateId: tpl.id, intent: 'watchlist' }, { method: "post" })}>
                   {watchlistedIds.includes(tpl.id) ? "♥" : "♡"}

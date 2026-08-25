@@ -91,7 +91,19 @@ export default function Builder() {
   const navigate = useNavigate();
 
   const [name, setName] = useState(popup.name);
-  const [config, setConfig] = useState(JSON.parse(popup.config));
+  const [config, setConfig] = useState(() => {
+    const parsedConfig = JSON.parse(popup.config);
+    if (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) {
+      if (parsedConfig.colors.primary !== "#ffffff" && parsedConfig.colors.primary !== "#000000") {
+        parsedConfig.colors.primary = "#000000";
+        parsedConfig.colors.buttonText = "#ffffff";
+      }
+      if (!parsedConfig.triggers) parsedConfig.triggers = {};
+      parsedConfig.triggers.type = "page_load";
+      parsedConfig.displayFrequency = "once_per_day";
+    }
+    return parsedConfig;
+  });
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const isMobile = previewDevice === "mobile";
 
@@ -582,7 +594,7 @@ export default function Builder() {
               )}
             </div>
 
-            {!(popup.name === "Website Redirect" || popup.name === "Subscribe") && (
+            {!(popup.name === "Website Redirect" || popup.name === "Subscribe Popup") && (
               <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Text Color</label>
                 <div style={{ display: "flex", gap: "8px" }}>
@@ -604,7 +616,7 @@ export default function Builder() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
               <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Background Color</label>
-              {plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe") ? (
+              {plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup") ? (
                 <select 
                   value={config.colors.primary === "#000000" || config.colors.primary === "#ffffff" ? config.colors.primary : "#000000"} 
                   onChange={(e) => {
@@ -643,7 +655,7 @@ export default function Builder() {
               )}
             </div>
 
-            {!(popup.name === "Website Redirect" || popup.name === "Subscribe") && (
+            {!(popup.name === "Website Redirect" || popup.name === "Subscribe Popup") && (
               <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Text Color</label>
                 <div style={{ display: "flex", gap: "8px" }}>
@@ -678,7 +690,7 @@ export default function Builder() {
               </div>
             )}
             
-            {!entitlements.customCSS && renderLocked("Custom CSS (Pro)")}
+            {!entitlements.customCSS && renderLocked("Custom CSS (Growth)")}
           </div>
 
           {/* Advanced Settings Section */}
@@ -706,13 +718,13 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Display Frequency</label>
-                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
+                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "once_per_day" : (config.displayFrequency || "once_per_day")} 
+                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "once_per_day" : (config.displayFrequency || "once_per_day")} 
                 onChange={(e) => setConfig({ ...config, displayFrequency: e.target.value })}
-                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#2A2A35" : "#0F0F13" }}
+                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="always">Every refresh</option>
                 <option value="once_per_day">Once per 24h</option>
@@ -723,13 +735,13 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Page Targeting</label>
-                {!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe") && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
+                {!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe Popup") && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={(!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "home" : (config.targeting?.page || "all")} 
+                value={(!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "home" : (config.targeting?.page || "all")} 
                 onChange={(e) => setConfig({ ...config, targeting: { ...config.targeting, page: e.target.value } })}
-                disabled={!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#2A2A35" : "#0F0F13" }}
+                disabled={!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe Popup")}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="all">All Pages</option>
                 <option value="home">Homepage</option>
@@ -776,13 +788,13 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Trigger Type</label>
-                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
+                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "page_load" : (config.triggers?.type || "page_load")} 
+                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "page_load" : (config.triggers?.type || "page_load")} 
                 onChange={(e) => setConfig({ ...config, triggers: { ...config.triggers, type: e.target.value } })}
-                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#2A2A35" : "#0F0F13" }}
+                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="page_load">Page Load</option>
                 <option value="delay" disabled={!entitlements.pageTargeting}>Delay (seconds) {!entitlements.pageTargeting ? "🔒 Growth" : ""}</option>

@@ -17,7 +17,7 @@ export const planLimits = {
     pageTargeting: true,
     exitIntent: false,
     analytics: false,
-    customCSS: false,
+    customCSS: true,
   },
   PRO: {
     templates: 10,
