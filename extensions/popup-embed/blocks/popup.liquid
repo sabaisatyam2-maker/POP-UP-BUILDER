@@ -12,8 +12,9 @@
   window.PopupBuilderConfig = {
     shopDomain: "{{ shop.domain }}",
     apiUrl: "/apps/popup-builder",
-    designMode: {{ request.design_mode | default: false }}
+    designMode: {{ request.design_mode | default: false }},
+    template: "{{ template.name | default: 'index' }}"
   };
 </script>
 
-<div id="popup-builder-container"></div>
+<div id="popup-builder-container" {{ block.shopify_attributes }}></div>

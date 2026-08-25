@@ -364,6 +364,8 @@ export default function Builder() {
                   )}
 
                   <button 
+                    type="button"
+                    onClick={(e) => e.preventDefault()}
                     style={{
                       padding: isMobile ? "8px 16px" : "12px 24px",
                       backgroundColor: config.colors?.primary || "#000000",
@@ -580,67 +582,86 @@ export default function Builder() {
               )}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Text Color</label>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input 
-                  type="color"
-                  value={config.colors.text?.startsWith('#') && (config.colors.text.length === 7 || config.colors.text.length === 4) ? config.colors.text : "#ffffff"}
-                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, text: e.target.value } })}
-                  style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
-                />
-                <input 
-                  type="text"
-                  value={config.colors.text || "#000000"} 
-                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, text: e.target.value } })}
-                  style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
-                />
+            {!(popup.name === "Website Redirect" || popup.name === "Subscribe") && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Text Color</label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input 
+                    type="color"
+                    value={config.colors.text?.startsWith('#') && (config.colors.text.length === 7 || config.colors.text.length === 4) ? config.colors.text : "#ffffff"}
+                    onChange={(e) => setConfig({ ...config, colors: { ...config.colors, text: e.target.value } })}
+                    style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                  />
+                  <input 
+                    type="text"
+                    value={config.colors.text || "#000000"} 
+                    onChange={(e) => setConfig({ ...config, colors: { ...config.colors, text: e.target.value } })}
+                    style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
               <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Background Color</label>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input 
-                  type="color"
-                  value={config.colors.primary?.startsWith('#') && (config.colors.primary.length === 7 || config.colors.primary.length === 4) ? config.colors.primary : "#ffffff"}
+              {plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe") ? (
+                <select 
+                  value={config.colors.primary === "#000000" || config.colors.primary === "#ffffff" ? config.colors.primary : "#000000"} 
                   onChange={(e) => {
                     const bg = e.target.value;
-                    const bText = getContrastColor(bg);
+                    const bText = bg === "#ffffff" ? "#000000" : "#ffffff";
                     setConfig({ ...config, colors: { ...config.colors, primary: bg, buttonText: bText } });
                   }}
-                  style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
-                />
-                <input 
-                  type="text"
-                  value={config.colors.primary} 
-                  onChange={(e) => {
-                    const bg = e.target.value;
-                    const bText = getContrastColor(bg);
-                    setConfig({ ...config, colors: { ...config.colors, primary: bg, buttonText: bText } });
-                  }}
-                  style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
-                />
-              </div>
+                  style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF" }}
+                >
+                  <option value="#ffffff">White</option>
+                  <option value="#000000">Black</option>
+                </select>
+              ) : (
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input 
+                    type="color"
+                    value={config.colors.primary?.startsWith('#') && (config.colors.primary.length === 7 || config.colors.primary.length === 4) ? config.colors.primary : "#ffffff"}
+                    onChange={(e) => {
+                      const bg = e.target.value;
+                      const bText = getContrastColor(bg);
+                      setConfig({ ...config, colors: { ...config.colors, primary: bg, buttonText: bText } });
+                    }}
+                    style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                  />
+                  <input 
+                    type="text"
+                    value={config.colors.primary} 
+                    onChange={(e) => {
+                      const bg = e.target.value;
+                      const bText = getContrastColor(bg);
+                      setConfig({ ...config, colors: { ...config.colors, primary: bg, buttonText: bText } });
+                    }}
+                    style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                  />
+                </div>
+              )}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Text Color</label>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input 
-                  type="color"
-                  value={config.colors.buttonText?.startsWith('#') && (config.colors.buttonText.length === 7 || config.colors.buttonText.length === 4) ? config.colors.buttonText : "#ffffff"}
-                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, buttonText: e.target.value } })}
-                  style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
-                />
-                <input 
-                  type="text"
-                  value={config.colors.buttonText || getContrastColor(config.colors.primary)} 
-                  onChange={(e) => setConfig({ ...config, colors: { ...config.colors, buttonText: e.target.value } })}
-                  style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
-                />
+            {!(popup.name === "Website Redirect" || popup.name === "Subscribe") && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Button Text Color</label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input 
+                    type="color"
+                    value={config.colors.buttonText?.startsWith('#') && (config.colors.buttonText.length === 7 || config.colors.buttonText.length === 4) ? config.colors.buttonText : "#ffffff"}
+                    onChange={(e) => setConfig({ ...config, colors: { ...config.colors, buttonText: e.target.value } })}
+                    style={{ width: "38px", height: "38px", padding: "0", border: "none", borderRadius: "4px", cursor: "pointer", background: "none" }}
+                  />
+                  <input 
+                    type="text"
+                    value={config.colors.buttonText || getContrastColor(config.colors.primary)} 
+                    onChange={(e) => setConfig({ ...config, colors: { ...config.colors, buttonText: e.target.value } })}
+                    style={{ flex: 1, padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", backgroundColor: "#0F0F13", color: "#FFFFFF", boxSizing: "border-box" }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {popup.name.includes("CYBER MONDAY") && (
               <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
@@ -679,16 +700,19 @@ export default function Builder() {
                 <option value="bottom">Bottom</option>
                 <option value="bottom-right">Bottom Right</option>
               </select>
+              <span style={{ fontSize: "11px", color: "#8E8E93" }}>* Not applicable for mobile devices.</span>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Display Frequency</label>
+                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={config.displayFrequency || "once_per_day"} 
+                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "once_per_day" : (config.displayFrequency || "once_per_day")} 
                 onChange={(e) => setConfig({ ...config, displayFrequency: e.target.value })}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: "#FFFFFF", backgroundColor: "#0F0F13" }}
+                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="always">Every refresh</option>
                 <option value="once_per_day">Once per 24h</option>
@@ -699,17 +723,18 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Page Targeting</label>
-                {!entitlements.pageTargeting && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
+                {!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe") && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={!entitlements.pageTargeting ? "home" : (config.targeting?.page || "all")} 
+                value={(!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "home" : (config.targeting?.page || "all")} 
                 onChange={(e) => setConfig({ ...config, targeting: { ...config.targeting, page: e.target.value } })}
-                disabled={!entitlements.pageTargeting}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: !entitlements.pageTargeting ? "#A0A0AB" : "#FFFFFF", backgroundColor: !entitlements.pageTargeting ? "#2A2A35" : "#0F0F13" }}
+                disabled={!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (!entitlements.pageTargeting && !(popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="all">All Pages</option>
                 <option value="home">Homepage</option>
                 <option value="product">Product Pages</option>
+                <option value="collection">Catalog / Collections</option>
                 <option value="cart">Cart Page</option>
               </select>
             </div>
@@ -720,7 +745,7 @@ export default function Builder() {
                 {!entitlements.pageTargeting && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <input 
-                type="date"
+                type="datetime-local"
                 value={!entitlements.pageTargeting ? "" : (config.schedule?.endDate || "")} 
                 onChange={(e) => setConfig({ ...config, schedule: { ...config.schedule, endDate: e.target.value } })}
                 disabled={!entitlements.pageTargeting}
@@ -751,16 +776,17 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Trigger Type</label>
+                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={config.triggers?.type || "page_load"} 
+                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "page_load" : (config.triggers?.type || "page_load")} 
                 onChange={(e) => setConfig({ ...config, triggers: { ...config.triggers, type: e.target.value } })}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: "#FFFFFF", backgroundColor: "#0F0F13" }}
+                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe")) ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="page_load">Page Load</option>
                 <option value="delay" disabled={!entitlements.pageTargeting}>Delay (seconds) {!entitlements.pageTargeting ? "🔒 Growth" : ""}</option>
                 <option value="scroll" disabled={!entitlements.pageTargeting}>Scroll Percentage {!entitlements.pageTargeting ? "🔒 Growth" : ""}</option>
-                <option value="exit_intent" disabled={!entitlements.exitIntent}>Exit Intent {!entitlements.exitIntent ? "🔒 Pro" : ""}</option>
               </select>
             </div>
 

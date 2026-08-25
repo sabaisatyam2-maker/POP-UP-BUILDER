@@ -40,11 +40,26 @@
             return;
           }
 
-          if (config.designMode) {
-            // In design mode, show immediately, ignore limits
-            showPopup(popup, pConfig);
-            return;
+          const targeting = pConfig.targeting || {};
+          if (targeting.page && targeting.page !== "all") {
+            if (targeting.page === "home" && config.template !== "index") return;
+            if (targeting.page === "product" && config.template !== "product") return;
+            if (targeting.page === "collection" && config.template !== "collection" && config.template !== "list-collections") return;
+            if (targeting.page === "cart" && config.template !== "cart") return;
           }
+
+          if (targeting.device && targeting.device !== "all") {
+            const isMobile = window.innerWidth <= 480;
+            if (targeting.device === "mobile" && !isMobile) return;
+            if (targeting.device === "desktop" && isMobile) return;
+          }
+
+          if (pConfig.schedule && pConfig.schedule.endDate) {
+            const end = new Date(pConfig.schedule.endDate).getTime();
+            if (Date.now() > end) return;
+          }
+
+
 
           const triggers = pConfig.triggers || { type: "page_load", frequency: "once_24h" };
           const displayFrequency = pConfig.displayFrequency || "once_per_day";
@@ -58,11 +73,7 @@
 
           const triggerType = triggers.type || "page_load";
 
-          if (triggerType === "exit_intent") {
-            document.addEventListener("mouseleave", e => {
-              if (e.clientY <= 0) showPopup(popup, pConfig);
-            }, { once: true });
-          } else if (triggerType === "scroll") {
+          if (triggerType === "scroll") {
             const onScroll = () => {
               const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
               if (scrollPercent >= (triggers.scrollPercent || 50)) {
@@ -90,6 +101,20 @@
     
     if (!config.designMode && popup.id !== "preview") {
       trackEvent(popup.id, "view");
+    }
+
+    if (pConfig.position === "bottom" && window.innerWidth > 480) {
+      container.style.alignItems = "flex-end";
+      container.style.justifyContent = "center";
+    } else if (pConfig.position === "top" && window.innerWidth > 480) {
+      container.style.alignItems = "flex-start";
+      container.style.justifyContent = "center";
+    } else if (pConfig.position === "bottom-right" && window.innerWidth > 480) {
+      container.style.alignItems = "flex-end";
+      container.style.justifyContent = "flex-end";
+    } else {
+      container.style.alignItems = "center";
+      container.style.justifyContent = "center";
     }
 
     const isMobile = window.innerWidth <= 480;
@@ -125,6 +150,11 @@
     canvas.style.boxShadow = styles.boxShadow || "0 4px 12px rgba(0,0,0,0.15)";
     canvas.style.width = "90%";
     canvas.style.maxWidth = pConfig.layout === "split" ? "600px" : "400px";
+    if (pConfig.position === "bottom" && window.innerWidth > 480) {
+      canvas.style.marginBottom = "24px";
+    } else if (pConfig.position === "bottom-right" && window.innerWidth > 480) {
+      canvas.style.margin = "24px";
+    }
     canvas.style.minHeight = pConfig.layout === "background" ? (isMobile ? "auto" : "360px") : "auto";
     canvas.style.display = "flex";
     canvas.style.flexDirection = pConfig.layout === "split" ? (isMobile ? "column" : "row") : "column";
@@ -333,6 +363,10 @@
       el.onclick = () => {
         if (!config.designMode && popup.id !== "preview") trackEvent(popup.id, "click");
         if (content.buttonUrl && content.buttonUrl.trim() !== "") {
+          if (config.designMode) {
+            alert("Button Clicked!\n\nRedirect URL: " + content.buttonUrl + "\n\n(Note: Redirects are disabled inside the Shopify Theme Editor for security reasons. To test the actual redirect, please view your live storefront.)");
+            return;
+          }
           window.location.href = content.buttonUrl;
         } else {
           closePopup(popup.id);
