@@ -161,7 +161,7 @@ export default function Templates() {
   const currentCategory = searchParams.get("category") || "All";
   const currentPlan = searchParams.get("plan") || "All";
   const currentSearch = searchParams.get("search") || "";
-  const currentSort = searchParams.get("sort") || "Newest";
+  const currentSort = searchParams.get("sort") || "Plan";
 
   const categories = ["All", "Sale", "Discount", "Newsletter", "Lead Generation", "Product Promotion", "Exit Intent", "Cart Recovery", "New Launch", "Seasonal", "Festival", "Announcement", "Free Shipping"];
   const plans = ["All", "FREE", "GROWTH", "PRO"];
@@ -174,14 +174,16 @@ export default function Templates() {
       .filter(t => currentPlan === "All" || t.plan === currentPlan)
       .filter(t => currentSearch === "" || t.name.toLowerCase().includes(currentSearch.toLowerCase()) || t.description.toLowerCase().includes(currentSearch.toLowerCase()))
       .sort((a, b) => {
-        // First sort by plan (FREE -> GROWTH -> PRO)
-        const planDiff = (planOrder[a.plan] || 99) - (planOrder[b.plan] || 99);
-        if (planDiff !== 0) return planDiff;
+        if (currentSort === "Plan") {
+          const planDiff = (planOrder[a.plan] || 99) - (planOrder[b.plan] || 99);
+          if (planDiff !== 0) return planDiff;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // secondary sort
+        }
 
-        // Then sort by whatever the user selected
         if (currentSort === "Newest") {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         }
+        
         return a.name.localeCompare(b.name);
       });
   }, [templates, currentCategory, currentPlan, currentSearch, currentSort]);
@@ -243,6 +245,7 @@ export default function Templates() {
               className="custom-select"
               style={{ paddingLeft: "36px", width: "160px", appearance: "none" }}
             >
+              <option value="Plan">By Plan</option>
               <option value="Newest">Newest</option>
               <option value="Alphabetical">Alphabetical</option>
             </select>
