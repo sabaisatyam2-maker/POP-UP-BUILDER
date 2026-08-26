@@ -98,9 +98,12 @@ export default function Builder() {
         parsedConfig.colors.primary = "#000000";
         parsedConfig.colors.buttonText = "#ffffff";
       }
+      parsedConfig.displayFrequency = "once_per_day";
+    }
+    
+    if (plan !== "PRO") {
       if (!parsedConfig.triggers) parsedConfig.triggers = {};
       parsedConfig.triggers.type = "page_load";
-      parsedConfig.displayFrequency = "once_per_day";
     }
     return parsedConfig;
   });
@@ -768,13 +771,13 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Device Targeting</label>
-                {plan !== "PRO" && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Pro</span>}
+                {!entitlements.mobileCustomization && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
               </div>
               <select 
-                value={plan !== "PRO" ? "all" : (config.targeting?.device || "all")} 
+                value={!entitlements.mobileCustomization ? "all" : (config.targeting?.device || "all")} 
                 onChange={(e) => setConfig({ ...config, targeting: { ...config.targeting, device: e.target.value } })}
-                disabled={plan !== "PRO"}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: plan !== "PRO" ? "#A0A0AB" : "#FFFFFF", backgroundColor: plan !== "PRO" ? "#2A2A35" : "#0F0F13" }}
+                disabled={!entitlements.mobileCustomization}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: !entitlements.mobileCustomization ? "#A0A0AB" : "#FFFFFF", backgroundColor: !entitlements.mobileCustomization ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="all">All Devices</option>
                 <option value="desktop">Desktop Only</option>
@@ -788,17 +791,17 @@ export default function Builder() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                 <label style={{ fontSize: "13px", fontWeight: "bold", color: "#FFFFFF" }}>Trigger Type</label>
-                {(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Growth</span>}
+                {plan !== "PRO" && <span style={{ fontSize: "12px", color: "#A0A0AB" }}>🔒 Pro</span>}
               </div>
               <select 
-                value={(plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "page_load" : (config.triggers?.type || "page_load")} 
+                value={plan !== "PRO" ? "page_load" : (config.triggers?.type || "page_load")} 
                 onChange={(e) => setConfig({ ...config, triggers: { ...config.triggers, type: e.target.value } })}
-                disabled={plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#A0A0AB" : "#FFFFFF", backgroundColor: (plan === "FREE" && (popup.name === "Website Redirect" || popup.name === "Subscribe Popup")) ? "#2A2A35" : "#0F0F13" }}
+                disabled={plan !== "PRO"}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: plan !== "PRO" ? "#A0A0AB" : "#FFFFFF", backgroundColor: plan !== "PRO" ? "#2A2A35" : "#0F0F13" }}
               >
                 <option value="page_load">Page Load</option>
-                <option value="delay" disabled={!entitlements.pageTargeting}>Delay (seconds) {!entitlements.pageTargeting ? "🔒 Growth" : ""}</option>
-                <option value="scroll" disabled={!entitlements.pageTargeting}>Scroll Percentage {!entitlements.pageTargeting ? "🔒 Growth" : ""}</option>
+                <option value="delay">Delay (seconds)</option>
+                <option value="scroll">Scroll Percentage</option>
               </select>
             </div>
 
