@@ -399,9 +399,7 @@ export default function Dashboard() {
           <div className="card" style={{ padding: "clamp(16px, 4vw, 32px)", background: "linear-gradient(135deg, rgba(35,35,49,1) 0%, rgba(17,17,22,1) 100%)", border: "1px solid #232331", borderRadius: "16px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
               <h2 style={{ fontSize: "16px", fontWeight: "600", margin: 0 }}>Recent Activity</h2>
-              <span style={{ color: "#8B8D97", fontSize: "12px" }}>View All</span>
             </div>
-            
             {activities.length === 0 ? (
               <div style={{ color: "#8B8D97" }}>No recent activity.</div>
             ) : (
