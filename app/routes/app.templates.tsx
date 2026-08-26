@@ -179,10 +179,6 @@ export default function Templates() {
           if (planDiff !== 0) return planDiff;
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // secondary sort
         }
-
-        if (currentSort === "Newest") {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        }
         
         return a.name.localeCompare(b.name);
       });
@@ -246,7 +242,6 @@ export default function Templates() {
               style={{ paddingLeft: "36px", width: "160px", appearance: "none" }}
             >
               <option value="Plan">By Plan</option>
-              <option value="Newest">Newest</option>
               <option value="Alphabetical">Alphabetical</option>
             </select>
           </div>
