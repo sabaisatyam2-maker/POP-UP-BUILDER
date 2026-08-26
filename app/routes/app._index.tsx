@@ -247,20 +247,7 @@ export default function Dashboard() {
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-                    <div>
-                      <div style={{ color: "#8B8D97", fontSize: "12px", marginBottom: "4px" }}>Views</div>
-                      <div style={{ color: "#FFFFFF", fontSize: "16px", fontWeight: "bold" }}>{popup.views.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div style={{ color: "#8B8D97", fontSize: "12px", marginBottom: "4px" }}>Clicks</div>
-                      <div style={{ color: "#FFFFFF", fontSize: "16px", fontWeight: "bold" }}>{popup.clicks.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div style={{ color: "#8B8D97", fontSize: "12px", marginBottom: "4px" }}>CTR</div>
-                      <div style={{ color: "#10B981", fontSize: "16px", fontWeight: "bold" }}>
-                        {popup.views > 0 ? ((popup.clicks / popup.views) * 100).toFixed(1) : "0"}%
-                      </div>
-                    </div>
+                    {/* Analytics hidden for now to prevent inaccurate data display */}
                   </div>
 
                   <div style={{ display: "flex", gap: "8px" }}>
@@ -347,8 +334,6 @@ export default function Dashboard() {
                   <tr>
                     <th>Name</th>
                     <th>Status</th>
-                    <th>Impressions</th>
-                    <th>Clicks</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -361,8 +346,6 @@ export default function Dashboard() {
                       <td>
                         <span style={{ color: "#8B8D97" }}>{popup.status}</span>
                       </td>
-                      <td>{popup.views}</td>
-                      <td>{popup.clicks}</td>
                       <td style={{ display: "flex", gap: "8px" }}>
                         <button className="gradient-button" style={{ background: "transparent", border: "1px solid #333344", padding: "6px 12px" }} onClick={() => navigate(`/app/templates/builder/${popup.id}`)}>
                           Edit
