@@ -764,7 +764,7 @@ export default function Builder() {
                 value={!entitlements.pageTargeting ? "" : (config.schedule?.endDate || "")} 
                 onChange={(e) => setConfig({ ...config, schedule: { ...config.schedule, endDate: e.target.value } })}
                 disabled={!entitlements.pageTargeting}
-                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: !entitlements.pageTargeting ? "#A0A0AB" : "#FFFFFF", backgroundColor: !entitlements.pageTargeting ? "#2A2A35" : "#0F0F13" }}
+                style={{ padding: "8px", border: "1px solid #3A3A4A", borderRadius: "4px", color: !entitlements.pageTargeting ? "#A0A0AB" : "#FFFFFF", backgroundColor: !entitlements.pageTargeting ? "#2A2A35" : "#0F0F13", colorScheme: "dark" }}
               />
             </div>
 
