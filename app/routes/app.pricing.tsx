@@ -137,8 +137,8 @@ export default function Pricing() {
       </button>
 
       <div style={{ textAlign: "center", marginBottom: "40px" }}>
-        <h1 style={{ fontSize: "32px", fontWeight: "bold", margin: "0 0 12px 0", color: "#FFFFFF" }}>Upgrade your plan</h1>
-        <p style={{ color: "#8B8D97", fontSize: "16px", margin: 0 }}>Choose the perfect plan for your business needs.</p>
+        <h1 style={{ fontSize: "clamp(24px, 6vw, 32px)", fontWeight: "bold", margin: "0 0 12px 0", color: "#FFFFFF", lineHeight: "1.3" }}>Upgrade your plan</h1>
+        <p style={{ color: "#8B8D97", fontSize: "16px", margin: 0, lineHeight: "1.5" }}>Choose the perfect plan for your business needs.</p>
       </div>
 
       <div style={{ display: "flex", gap: "24px", justifyContent: "center", flexWrap: "wrap" }}>
