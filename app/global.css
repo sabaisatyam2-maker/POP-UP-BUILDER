@@ -24,6 +24,11 @@
 .Polaris-Select__Input {
   color: #FFFFFF !important;
   background-color: transparent !important;
+  color-scheme: dark;
+}
+option {
+  background-color: #1A1A24;
+  color: #FFFFFF;
 }
 .Polaris-TextField__Input::placeholder {
   color: #8B8D97 !important;
