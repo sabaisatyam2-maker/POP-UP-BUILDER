@@ -114,9 +114,6 @@ export default function SupportPage() {
                     >
                       {isSubmitting ? "Sending..." : "Submit"}
                     </button>
-                    <div style={{ fontSize: "12px", color: "#666", marginTop: "8px" }}>
-                      * The first time this form is used, an activation email will be sent to the support inbox.
-                    </div>
                   </div>
                 </>
               )}
