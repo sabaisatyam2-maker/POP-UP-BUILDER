@@ -369,14 +369,7 @@ export default function Builder() {
                     {config.content?.description || "Description text goes here."}
                   </p>
 
-                  {config.hasEmailInput && (
-                    <input 
-                      type="email" 
-                      placeholder="Enter your email" 
-                      style={{ padding: "10px", width: config.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none", textAlign: config.layout === "image-bottom-right" ? "left" : "center" }}
-                      readOnly
-                    />
-                  )}
+                  {/* Email input removed */}
 
                   <button 
                     type="button"

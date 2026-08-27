@@ -1,16 +1,20 @@
 import { data, type LoaderFunctionArgs, type ActionFunctionArgs } from "react-router";
 import db from "../db.server";
-import crypto from "crypto";
+import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   
-  // Basic Shopify Proxy Signature Verification
-  // In a real production app, verify signature using process.env.SHOPIFY_API_SECRET
-  // For the sake of this prototype, we'll bypass strict verification if we want easy testing,
-  // but it's important to include the structure.
+  // Verify App Proxy request signature
+  let session;
+  try {
+    const authResult = await authenticate.public.appProxy(request);
+    session = authResult.session;
+  } catch (error) {
+    return data({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const shop = url.searchParams.get("shop");
+  const shop = url.searchParams.get("shop") || session?.shop;
   if (!shop) {
     return data({ error: "Missing shop parameter" }, { status: 400 });
   }

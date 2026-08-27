@@ -135,12 +135,6 @@ export default function Watchlist() {
                           </div>
                         )}
                         
-                        {pConfig.hasEmailInput && (
-                          <div style={{ padding: "6px 8px", marginBottom: "8px", width: pConfig.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontSize: "11px", color: "#888", textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", backgroundColor: "#fff", position: "relative", zIndex: 2 }}>
-                            Enter your email
-                          </div>
-                        )}
-                        
                         <div style={{
                           padding: "6px 12px", width: pConfig.layout === "image-bottom-right" || pConfig.layout === "background" ? "max-content" : "100%", border: "none", borderRadius: "4px",
                           backgroundColor: pConfig.colors.primary, color: "#fff", fontWeight: "bold", fontSize: "12px", boxSizing: "border-box", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", alignSelf: pConfig.layout === "image-bottom-right" ? "flex-start" : "center"

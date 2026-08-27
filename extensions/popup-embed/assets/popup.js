@@ -339,20 +339,7 @@
       contentDiv.appendChild(el);
     }
 
-    if (pConfig.hasEmailInput) {
-      const el = document.createElement("input");
-      el.type = "email";
-      el.placeholder = "Enter your email";
-      el.className = "pb-email-input";
-      el.style.padding = "10px";
-      el.style.width = pConfig.layout === "image-bottom-right" ? "55%" : "100%";
-      el.style.borderRadius = "4px";
-      el.style.border = "1px solid #ccc";
-      el.style.boxSizing = "border-box";
-      el.style.marginBottom = "16px";
-      el.style.textAlign = pConfig.layout === "image-bottom-right" ? "left" : "center";
-      contentDiv.appendChild(el);
-    }
+    // Email input has been removed for verification compliance
 
     if (content.buttonText) {
       const el = document.createElement("button");

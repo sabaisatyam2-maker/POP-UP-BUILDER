@@ -50,7 +50,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     
     { name: "Free Shipping", description: "Offer free shipping with an eye-catching 3D truck.", type: "POPUP", category: "Free Shipping", plan: "GROWTH", previewImage: "/3d_truck_transparent.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: false, imageUrl: "/3d_truck_transparent.png", colors: { background: "#e0f2fe", text: "#000000", primary: "#0066ff", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", border: "none" }, content: { headline: "Free Shipping\nOn All Orders", description: "Shop now and get free shipping on all orders.", buttonText: "Shop Now" } }) },
     
-    { name: "Subscribe Popup", description: "A clean, modern newsletter capture.", type: "POPUP", category: "Newsletter", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1577563908411-50cb98976efe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "#ffffff", text: "#111827", primary: "#111827" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }, content: { headline: "Stay in the loop", description: "Get the latest updates, exclusive offers, and more directly to your inbox.", buttonText: "Subscribe Now" } }) },
+    { name: "Subscribe Popup", description: "A clean, modern newsletter capture.", type: "POPUP", category: "Newsletter", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1577563908411-50cb98976efe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, colors: { background: "#ffffff", text: "#111827", primary: "#111827" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }, content: { headline: "Stay in the loop", description: "Click below to get the latest updates and exclusive offers.", buttonText: "View Offers" } }) },
     
     { name: "Website Redirect", description: "Clean, minimalist redirect popup.", type: "POPUP", category: "Announcement", plan: "FREE", previewImage: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, colors: { background: "#ffffff", text: "#000000", primary: "#000000" }, styles: { borderRadius: "12px", padding: "32px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", border: "none" }, content: { headline: "Special Offer", description: "Click the button below to claim your offer on the next page.", buttonText: "Claim Offer", buttonUrl: "" } }) },
     
@@ -59,7 +59,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     
     { name: "Hurry Up!", description: "Create massive urgency with a glowing timer.", type: "POPUP", category: "Cart Recovery", plan: "GROWTH", previewImage: "/3d_clock.png", config: JSON.stringify({ layout: "split", hasEmailInput: false, imageUrl: "/3d_clock.png", colors: { background: "#9dc8d7", text: "#164e63", primary: "#ec4899", buttonText: "#ffffff" }, styles: { borderRadius: "24px", padding: "0", boxShadow: "0 20px 50px rgba(236, 72, 153, 0.25)", border: "none" }, content: { headline: "Hurry Up!", description: "Your cart is expiring soon! Complete your checkout now to secure your items.", buttonText: "Checkout Now" } }) },
     
-    { name: "VIP Early Access", description: "Exclusive premium design for VIPs.", type: "POPUP", category: "Announcement", plan: "PRO", previewImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: true, colors: { background: "linear-gradient(to right, #004e8f, #f29e11)", text: "#ffffff", primary: "#de923b", buttonText: "#ffffff" }, styles: { borderRadius: "24px", padding: "40px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)", border: "none" }, content: { headline: "VIP Early Access", description: "Enter your email to unlock the secret store before anyone else.", buttonText: "Unlock VIP Access" } }) },
+    { name: "VIP Early Access", description: "Exclusive premium design for VIPs.", type: "POPUP", category: "Announcement", plan: "PRO", previewImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop", config: JSON.stringify({ layout: "modal", hasEmailInput: false, colors: { background: "linear-gradient(to right, #004e8f, #f29e11)", text: "#ffffff", primary: "#de923b", buttonText: "#ffffff" }, styles: { borderRadius: "24px", padding: "40px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)", border: "none" }, content: { headline: "VIP Early Access", description: "Click below to unlock the secret store before anyone else.", buttonText: "Unlock VIP Access" } }) },
     
     // PRO
     { name: "Ultimate Black Friday", description: "The most aggressive sale template.", type: "POPUP", category: "Sale", plan: "PRO", previewImage: "/3d_black_gift.png", config: JSON.stringify({ layout: "image-bottom-right", hasEmailInput: false, imageUrl: "/3d_black_gift.png", colors: { background: "#111111", text: "#ffffff", primary: "#dd8801", buttonText: "#ffffff" }, styles: { borderRadius: "16px", padding: "32px", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)", border: "none" }, content: { subheadline: "BLACK FRIDAY", headline: "MEGA SALE", description: "Up to 50% OFF on selected items!", buttonText: "Shop Now" } }) },
@@ -304,11 +304,7 @@ export default function Templates() {
                           </div>
                         )}
                         
-                        {pConfig.hasEmailInput && (
-                          <div style={{ padding: "6px 8px", marginBottom: "8px", width: pConfig.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", fontSize: "11px", color: "#888", textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center", backgroundColor: "#fff", position: "relative", zIndex: 2 }}>
-                            Enter your email
-                          </div>
-                        )}
+                        {/* Email input removed */}
                         
                         <div style={{
                           padding: "6px 12px", width: pConfig.layout === "image-bottom-right" || pConfig.layout === "background" ? "max-content" : "100%", border: "none", borderRadius: "4px",
@@ -471,14 +467,7 @@ export default function Templates() {
                         <p style={{ margin: 0, fontSize: previewTemplate.name.includes("CYBER MONDAY") ? (isMobile ? "12px" : "14px") : (isMobile ? "14px" : "16px"), lineHeight: "1.5", color: (/new year sale/i.test(previewTemplate.name) || (pConfig.imageUrl && pConfig.imageUrl.includes('new_year_fireworks'))) ? getContrastColor(pConfig.colors.background || "#050505") : pConfig.colors.text, maxWidth: pConfig.layout === "image-bottom-right" ? (isMobile ? "58%" : "55%") : "none", position: "relative", zIndex: 2, textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}>{pConfig.content.description}</p>
 
                         
-                        {pConfig.hasEmailInput && (
-                          <input 
-                            type="email" 
-                            placeholder="Enter your email" 
-                            style={{ padding: "10px", width: pConfig.layout === "image-bottom-right" ? "55%" : "100%", borderRadius: "4px", border: "1px solid #ccc", boxSizing: "border-box", pointerEvents: "none", textAlign: pConfig.layout === "image-bottom-right" ? "left" : "center" }}
-                            readOnly
-                          />
-                        )}
+                        {/* Email input removed */}
                         
                         <div style={{
                           padding: isMobile ? "8px 16px" : "12px 24px", width: pConfig.layout === "image-bottom-right" || pConfig.layout === "background" ? "max-content" : "100%", maxWidth: pConfig.layout === "image-bottom-right" ? "55%" : "none", border: "none", borderRadius: "4px",
