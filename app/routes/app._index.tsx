@@ -118,6 +118,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const subscription = await db.subscription.findUnique({ where: { shop: session.shop } });
       const plan = (subscription?.plan as any) || "FREE";
       
+      // Verify template plan tier
+      try {
+        const pConfig = JSON.parse(popup.config);
+        const reqPlan = pConfig.templatePlan || "FREE";
+        
+        if (reqPlan === "PRO" && plan !== "PRO") {
+           return data({ error: "This popup uses a PRO template. Please upgrade your plan to activate it." }, { status: 400 });
+        }
+        if (reqPlan === "GROWTH" && plan === "FREE") {
+           return data({ error: "This popup uses a GROWTH template. Please upgrade your plan to activate it." }, { status: 400 });
+        }
+      } catch(e) {
+        // Ignore JSON parse errors for legacy popups
+      }
+      
       const activeCount = await db.popup.count({ where: { shop: session.shop, status: "ACTIVE" } });
       const { canCreatePopup } = await import("../lib/entitlements");
       if (!canCreatePopup(activeCount, plan)) {

@@ -60,8 +60,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       data: { plan: "FREE" },
     });
 
+    // Pause all active popups to enforce plan limits on downgrade
+    await db.popup.updateMany({
+      where: { shop, status: "ACTIVE" },
+      data: { status: "PAUSED" },
+    });
+
     await db.activityLog.create({
-      data: { shop, action: "DOWNGRADED", description: `Changed plan to FREE.` },
+      data: { shop, action: "DOWNGRADED", description: `Changed plan to FREE. All active popups were paused.` },
     });
 
     const url = new URL(request.url);
