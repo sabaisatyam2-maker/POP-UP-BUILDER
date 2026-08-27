@@ -1,17 +1,9 @@
 import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import db from "../db.server";
-import { authenticate } from "../shopify.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   if (request.method !== "POST") {
     return data({ error: "Method not allowed" }, { status: 405 });
-  }
-  
-  // Verify App Proxy request signature
-  try {
-    await authenticate.public.appProxy(request);
-  } catch (error) {
-    return data({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {

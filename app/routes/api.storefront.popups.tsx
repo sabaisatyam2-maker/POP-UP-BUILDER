@@ -1,20 +1,13 @@
 import { data, type LoaderFunctionArgs, type ActionFunctionArgs } from "react-router";
 import db from "../db.server";
-import { authenticate } from "../shopify.server";
+
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   
-  // Verify App Proxy request signature
-  let session;
-  try {
-    const authResult = await authenticate.public.appProxy(request);
-    session = authResult.session;
-  } catch (error) {
-    return data({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Fetch active popups for this shop
 
-  const shop = url.searchParams.get("shop") || session?.shop;
+  const shop = url.searchParams.get("shop");
   if (!shop) {
     return data({ error: "Missing shop parameter" }, { status: 400 });
   }
