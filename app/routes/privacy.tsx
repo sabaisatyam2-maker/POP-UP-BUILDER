@@ -9,9 +9,10 @@ export const meta: MetaFunction = () => {
 
 export default function PrivacyPolicy() {
   return (
-    <div style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", lineHeight: "1.6", maxWidth: "800px", margin: "0 auto", padding: "40px 20px", color: "#333" }}>
-      <h1 style={{ borderBottom: "1px solid #eaeaea", paddingBottom: "10px" }}>Privacy Policy</h1>
-      <p style={{ color: "#666", fontSize: "0.9em" }}>Last updated: August 29, 2026</p>
+    <div style={{ backgroundColor: "#000000", minHeight: "100vh", padding: "40px 20px" }}>
+      <div style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", lineHeight: "1.6", maxWidth: "800px", margin: "0 auto", color: "#ffffff" }}>
+        <h1 style={{ borderBottom: "1px solid #333", paddingBottom: "10px", color: "#ffffff" }}>Privacy Policy</h1>
+        <p style={{ color: "#aaaaaa", fontSize: "0.9em" }}>Last updated: August 29, 2026</p>
       
       <p>
         This Privacy Policy describes how Pop-up Builder (the "App") collects, uses, and shares information 
@@ -49,6 +50,7 @@ export default function PrivacyPolicy() {
 
       <h2 style={{ marginTop: "30px" }}>6. Contact Us</h2>
       <p>For more information about our privacy practices, if you have questions, or if you would like to make a request to delete your data, please contact us by e-mail.</p>
+      </div>
     </div>
   );
 }
