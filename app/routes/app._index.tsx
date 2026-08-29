@@ -4,13 +4,36 @@ import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { useState, useEffect } from "react";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   const shop = session.shop;
+
+  const billingCheck = await billing.check({
+    plans: ["GROWTH", "PRO"],
+    isTest: true,
+  });
+
+  let activePlan = "FREE";
+  if (billingCheck.hasActivePayment) {
+    if (billingCheck.appSubscriptions.some((sub: any) => sub.name === "PRO")) {
+      activePlan = "PRO";
+    } else if (billingCheck.appSubscriptions.some((sub: any) => sub.name === "GROWTH")) {
+      activePlan = "GROWTH";
+    }
+  }
 
   // Fetch or create subscription
   let subscription = await db.subscription.findUnique({ where: { shop } });
   if (!subscription) {
-    subscription = await db.subscription.create({ data: { shop, plan: "FREE" } });
+    subscription = await db.subscription.create({ data: { shop, plan: activePlan } });
+  } else if (subscription.plan !== activePlan) {
+    const planOrder: Record<string, number> = { "FREE": 1, "GROWTH": 2, "PRO": 3 };
+    if ((planOrder[activePlan] || 1) < (planOrder[subscription.plan] || 1)) {
+      await db.popup.updateMany({
+        where: { shop, status: "ACTIVE" },
+        data: { status: "PAUSED" },
+      });
+    }
+    subscription = await db.subscription.update({ where: { shop }, data: { plan: activePlan } });
   }
 
   // Fetch popups
