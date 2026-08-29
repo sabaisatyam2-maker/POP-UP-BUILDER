@@ -12,7 +12,6 @@ export default function PrivacyPolicy() {
     <div style={{ backgroundColor: "#000000", minHeight: "100vh", padding: "40px 20px" }}>
       <div style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", lineHeight: "1.6", maxWidth: "800px", margin: "0 auto", color: "#ffffff" }}>
         <h1 style={{ borderBottom: "1px solid #333", paddingBottom: "10px", color: "#ffffff" }}>Privacy Policy</h1>
-        <p style={{ color: "#aaaaaa", fontSize: "0.9em" }}>Last updated: August 29, 2026</p>
       
       <p>
         This Privacy Policy describes how Pop-up Builder (the "App") collects, uses, and shares information 
